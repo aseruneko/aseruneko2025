@@ -236,9 +236,9 @@ function raffleWhiteStone(game: ReversiService) {
   const ring = game.has(ReversiItemCode.Ring)?.currentValue;
   const jewel = game.has(ReversiItemCode.Jewel)?.currentValue;
   if (mail) pools.push(...new Array(mail ?? 0).fill(ReversiStone.Mail));
-  if (email) pools.push(...new Array(mail ?? 0).fill(ReversiStone.Email));
-  if (ring) pools.push(...new Array(mail ?? 0).fill(ReversiStone.Ring));
-  if (jewel) pools.push(...new Array(mail ?? 0).fill(ReversiStone.Jewel));
+  if (email) pools.push(...new Array(email ?? 0).fill(ReversiStone.Email));
+  if (ring) pools.push(...new Array(ring ?? 0).fill(ReversiStone.Ring));
+  if (jewel) pools.push(...new Array(jewel ?? 0).fill(ReversiStone.Jewel));
   if (randomInt(100) >= pools.length) return ReversiStone.White;
   return random(pools)!;
 }
