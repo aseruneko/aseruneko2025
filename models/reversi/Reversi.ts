@@ -58,9 +58,9 @@ export const ReversiGoalScore = [
   10,
   25,
   50,
-  250,
+  150,
   666,
-  1000,
+  1500,
   5000,
   10000,
 ] as const;
