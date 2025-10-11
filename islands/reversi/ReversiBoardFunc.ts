@@ -31,14 +31,14 @@ export const ReversiBoardFunc = {
     const width = crop(
       Reversi.DEFAULT_WIDTH + Math.floor(game.reversi.round / 2) +
         (game.has(ReversiItemCode.Yokoplus)?.currentValue ?? 0) +
-        (game.has(ReversiItemCode.Libra)?.currentValue ?? -2),
+        (game.has(ReversiItemCode.Libra) ? -2 : 0),
       4,
       12,
     );
     const height = crop(
       Reversi.DEFAULT_HEIGHT + Math.floor((game.reversi.round - 1) / 2) +
         (game.has(ReversiItemCode.Tateplus)?.currentValue ?? 0) +
-        (game.has(ReversiItemCode.Libra)?.currentValue ?? -2),
+        (game.has(ReversiItemCode.Libra) ? -2 : 0),
       4,
       12,
     );

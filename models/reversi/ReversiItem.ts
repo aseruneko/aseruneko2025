@@ -157,7 +157,7 @@ export const ReversiItems: ReversiItem[] = [
     desc: "アイテムの枠を$v個増やす。",
     price: 3,
     isUnique: false,
-    value: 1,
+    value: 2,
   },
   {
     code: ReversiItemCode.Orange,
