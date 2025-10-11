@@ -99,7 +99,7 @@ export const ReversiBoardFunc = {
     const reversi = game.reversi;
     reversi.board.board.map((row, y) => {
       row.map((cell, x) => {
-        cell.placeables = new Map();
+        cell.placeables.clear();
         Object.values(ReversiColor).forEach((color) => {
           const result = this.countReversible(game, color, [x, y]);
           if (result) cell.placeables.set(color, result);

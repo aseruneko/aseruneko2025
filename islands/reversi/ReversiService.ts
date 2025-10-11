@@ -211,7 +211,7 @@ function applyBank(game: ReversiService) {
   let coins = game.reversi.coins;
   if (itemBank) {
     const earned = Math.ceil(
-      coins * (100 + (itemBank?.currentValue ?? 0)) / 100,
+      coins * (itemBank?.currentValue ?? 0) / 100,
     );
     coins += earned;
     if (earned > 0) {
