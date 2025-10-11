@@ -1,0 +1,53 @@
+@font-face {
+  font-family: "Local Noto Sans JP";
+  src: local("Noto Sans JP");
+}
+
+body {
+  font-family: "Local Noto Sans JP", "Noto Sans JP", sans-serif;
+}
+
+a {
+  text-decoration: underline;
+  color: blue;
+}
+
+.tooltip {
+  position: relative;
+  cursor: default;
+}
+.tooltip:hover > .tooltip-text {
+  opacity: 1;
+  visibility: visible;
+}
+.tooltip-text {
+  z-index: 1;
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 35px;
+  display: inline-block;
+  padding: 6px;
+  font-size: 10.5px;
+  line-height: 1.3;
+  background: #333;
+  color: #fff;
+  border-radius: 3px;
+  transition: 0.3s ease-in;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-weight: 400;
+  white-space: pre-wrap;
+  width: max-content;
+  max-width: 240px;
+  &:before {
+    content: "";
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    margin-left: -7px;
+    border: 7px solid transparent;
+    border-bottom: 7px solid #333;
+  }
+}
