@@ -4,7 +4,6 @@ import { useSignal } from "@preact/signals";
 import { Reversi, ReversiState } from "../../models/reversi/Reversi.ts";
 import { ReversiShopFunc } from "./ReversiShopFunc.ts";
 import { ReversiStoneCode } from "../../models/reversi/ReversiStone.ts";
-import { copyFile } from "node:fs";
 
 export default function ReversiComponent() {
   const reversi = useSignal(Reversi.Default());

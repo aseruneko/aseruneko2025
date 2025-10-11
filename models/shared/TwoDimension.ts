@@ -9,7 +9,7 @@ export const Dircection: Record<string, Coord> = {
   S: [0, 1],
   SW: [-1, 1],
   W: [-1, 0],
-  NW: [-1, 1],
+  NW: [-1, -1],
 } as const;
 
 export const Directions: Coord[] = Object.values(Dircection);
