@@ -77,6 +77,8 @@ export class ReversiService {
       ReversiShopFunc.unlock(this, ReversiItemCode.Orange);
       ReversiShopFunc.unlock(this, ReversiItemCode.Dmz);
       ReversiShopFunc.unlock(this, ReversiItemCode.Aquarias);
+      ReversiShopFunc.unlock(this, ReversiItemCode.Libra);
+      ReversiShopFunc.unlock(this, ReversiItemCode.Chick);
       return;
     } else {
       this.log(
@@ -90,6 +92,8 @@ export class ReversiService {
         ReversiShopFunc.unlock(this, ReversiItemCode.Orange);
         ReversiShopFunc.unlock(this, ReversiItemCode.Dmz);
         ReversiShopFunc.unlock(this, ReversiItemCode.Aquarias);
+        ReversiShopFunc.unlock(this, ReversiItemCode.Libra);
+        ReversiShopFunc.unlock(this, ReversiItemCode.Chick);
         return;
       }
     }
@@ -161,6 +165,7 @@ export class ReversiService {
     this.reversi = { inventory };
     if (item.code === ReversiItemCode.Pass) applyPass(this);
     if (item.code === ReversiItemCode.Reload) applyReload(this);
+    if (item.code === ReversiItemCode.Hammer) applyHammer(this);
   }
 
   isReroleDisabled() {
@@ -246,4 +251,9 @@ function applyJudgeMoon(game: ReversiService) {
     };
     if (earned > 0) game.log(`${moon.icon}${moon.name}により💠${earned}を獲得`);
   }
+}
+
+function applyHammer(game: ReversiService) {
+  ReversiBoardFunc.calcPlaceables(game, false);
+  ReversiShopFunc.reactivate(game, ReversiItemCode.Pass);
 }

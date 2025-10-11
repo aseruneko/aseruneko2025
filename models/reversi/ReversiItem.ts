@@ -39,6 +39,10 @@ export const ReversiItemCode = {
   Rat: "RAT",
   Dmz: "DMZ",
   Aquarias: "AQUARIAS",
+  Hammer: "HAMMER",
+  Pigeon: "PIGEON",
+  Libra: "LIBRA",
+  Chick: "CHICK",
 } as const;
 export type ReversiItemCode =
   (typeof ReversiItemCode)[keyof typeof ReversiItemCode];
@@ -61,6 +65,7 @@ export const ReversiInitialUnlocked = [
   ReversiItemCode.Insurance,
   ReversiItemCode.JudgeMoon,
   ReversiItemCode.Rat,
+  ReversiItemCode.Hammer,
 ] as const;
 
 export const ReversiItems: ReversiItem[] = [
@@ -161,7 +166,7 @@ export const ReversiItems: ReversiItem[] = [
     desc: "ラウンド開始時、$v%で🍊を配置。🍊は中立で💠5🪙5",
     price: 8,
     isUnique: false,
-    value: 10,
+    value: 20,
   },
   {
     code: ReversiItemCode.Pass,
@@ -220,7 +225,7 @@ export const ReversiItems: ReversiItem[] = [
   {
     code: ReversiItemCode.Reload,
     icon: "🔄",
-    name: "購買再起素子",
+    name: "購買再帰素子",
     desc: "$v回使用可。無料でリロールする",
     price: 6,
     isUnique: true,
@@ -242,7 +247,7 @@ export const ReversiItems: ReversiItem[] = [
     icon: "🪪",
     name: "社会保障番号",
     desc: "⚫の配置時、🪙$vを得る",
-    price: 8,
+    price: 4,
     isUnique: false,
     value: 1,
   },
@@ -280,5 +285,44 @@ export const ReversiItems: ReversiItem[] = [
     desc: "白番の後に追加の白番が増える。反転した石の総💠が2倍",
     price: 5,
     isUnique: true,
+  },
+  {
+    code: ReversiItemCode.Hammer,
+    icon: "🔨",
+    name: "アタックチャンス",
+    desc: "$v回使用可。次の黒番は、既に石がある場所にも配置できる",
+    price: 4,
+    isUnique: true,
+    value: 1,
+    used: false,
+    usedFor: "IN_ROUND",
+  },
+  {
+    code: ReversiItemCode.Pigeon,
+    icon: "🕊️",
+    name: "平和主義",
+    desc: "$v回使用可。次の黒番は、反転した石を元に戻す",
+    price: 9,
+    isUnique: true,
+    value: 3,
+    used: false,
+    usedFor: "IN_ROUND",
+  },
+  {
+    code: ReversiItemCode.Libra,
+    icon: "♎",
+    name: "天秤座の徽章",
+    desc: "盤面の幅-2(最低4)。反転した石の総💠が2倍",
+    price: 5,
+    isUnique: true,
+  },
+  {
+    code: ReversiItemCode.Chick,
+    icon: "🐤",
+    name: "陛下の恩寵",
+    desc: "ラウンド開始時、$v%で🐤を配置。🐤は中立で白番終了時💠2生産",
+    price: 12,
+    isUnique: false,
+    value: 20,
   },
 ] as const;

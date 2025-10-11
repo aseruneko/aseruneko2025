@@ -216,6 +216,11 @@ export default function ReversiComponent() {
         </p>
         <textarea id="myScore">{game.playLog()}</textarea>
       </div>
+      <div class="done">
+        <b>v0.0.2</b>
+        <p>・初期アイテム枠を5から6に変更。バランス微調整。</p>
+        <p>・🔨追加。🕊️♎🐤追加（プレイ後に解禁）</p>
+      </div>
       <div class="todo">
         <b>やりたいことリスト</b>
         <p>・難易度調整</p>

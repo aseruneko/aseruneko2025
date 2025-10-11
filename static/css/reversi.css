@@ -113,6 +113,9 @@ footer {
   &.clickable {
     background-color: #4e993d;
     cursor: pointer;
+    .stone {
+      cursor: pointer;
+    }
   }
 }
 
@@ -273,10 +276,18 @@ footer {
   }
 }
 
+.done {
+  border: solid 1px #dfe0e0;
+  box-shadow: 0 0 3px 1px #dfe0e0;
+  background-color: #ffffff;
+  padding: 16px 24px;
+  width: 420px;
+}
+
 .todo {
   border: solid 1px #dfe0e0;
   box-shadow: 0 0 3px 1px #dfe0e0;
   background-color: #ffffff;
   padding: 16px 24px;
-  width: 300px;
+  width: 420px;
 }

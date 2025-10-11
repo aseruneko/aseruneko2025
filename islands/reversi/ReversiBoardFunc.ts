@@ -30,13 +30,15 @@ export const ReversiBoardFunc = {
   initBoard(game: ReversiService) {
     const width = crop(
       Reversi.DEFAULT_WIDTH + Math.floor(game.reversi.round / 2) +
-        (game.has(ReversiItemCode.Yokoplus)?.currentValue ?? 0),
+        (game.has(ReversiItemCode.Yokoplus)?.currentValue ?? 0) +
+        (game.has(ReversiItemCode.Libra)?.currentValue ?? -2),
       4,
       12,
     );
     const height = crop(
       Reversi.DEFAULT_HEIGHT + Math.floor((game.reversi.round - 1) / 2) +
-        (game.has(ReversiItemCode.Tateplus)?.currentValue ?? 0),
+        (game.has(ReversiItemCode.Tateplus)?.currentValue ?? 0) +
+        (game.has(ReversiItemCode.Libra)?.currentValue ?? -2),
       4,
       12,
     );
@@ -73,11 +75,12 @@ export const ReversiBoardFunc = {
     game: ReversiService,
     by: ReversiColor,
     from: Coord,
+    emptyCheck: boolean = true,
   ): ReversiOutcome {
     const board = game.reversi.board.board;
     const to = at(board, from);
     if (to === undefined) return ReversiOutcome.None();
-    if (to.stone !== undefined) return ReversiOutcome.None();
+    if (emptyCheck && to.stone !== undefined) return ReversiOutcome.None();
     return ReversiOutcome.sum(Directions.flatMap((d) => {
       return _countReversible(board, by, plus(from, d), d);
     }));
@@ -95,13 +98,13 @@ export const ReversiBoardFunc = {
     });
     return count;
   },
-  calcPlaceables(game: ReversiService) {
+  calcPlaceables(game: ReversiService, emptyCheck: boolean = true) {
     const reversi = game.reversi;
     reversi.board.board.map((row, y) => {
       row.map((cell, x) => {
         cell.placeables.clear();
         [...Object.values(ReversiColor)].forEach((color) => {
-          const result = this.countReversible(game, color, [x, y]);
+          const result = this.countReversible(game, color, [x, y], emptyCheck);
           if (result) cell.placeables.set(color, result);
         });
       });
@@ -124,6 +127,7 @@ export const ReversiBoardFunc = {
       }
       _reverse(game, board, color, plus([x, y], d), d);
     });
+    ReversiShopFunc.reactivate(game, ReversiItemCode.Pigeon);
     this.setBoard(game, { board: board });
     adjustScore(game, score);
     if (color === ReversiColor.Black) {
@@ -156,6 +160,7 @@ export const ReversiBoardFunc = {
     if (ns > 0) this.putStone(game, ReversiColor.White, [nx, ny]);
     applyRat(game);
     applyDmz(game);
+    applyChick(game);
   },
 };
 
@@ -195,6 +200,9 @@ function _reverse(
       stone = ReversiStone.Black;
       if (game.has(ReversiItemCode.BlackMonolis)) {
         stone = raffleBlackStone(game);
+      }
+      if (game.isActive(ReversiItemCode.Pigeon)) {
+        stone = n.stone;
       }
     }
     if (by === ReversiColor.White) {
@@ -258,12 +266,10 @@ function raffleNeutralStones(game: ReversiService) {
 
 function raffleNeutralStone(game: ReversiService) {
   const pools: ReversiStone[] = [];
-  const orange = game.has(ReversiItemCode.Orange);
-  if (orange) {
-    pools.push(
-      ...new Array(orange.currentValue ?? 0).fill(ReversiStone.Orange),
-    );
-  }
+  const orange = game.has(ReversiItemCode.Orange)?.currentValue;
+  const chick = game.has(ReversiItemCode.Chick)?.currentValue;
+  if (orange) pools.push(...new Array(orange ?? 0).fill(ReversiStone.Orange));
+  if (chick) pools.push(...new Array(chick ?? 0).fill(ReversiStone.Chick));
   if (randomInt(100) >= pools.length) return undefined;
   return random(pools)!;
 }
@@ -297,6 +303,16 @@ function adjustScore(game: ReversiService, score: ReversiOutcome) {
       score.score = score.score + aquarias;
       game.log(
         `${aquariasItem.icon}${aquariasItem.name}により獲得💠が${aquarias}増加`,
+      );
+    }
+  }
+  const libraItem = game.has(ReversiItemCode.Libra);
+  if (libraItem) {
+    const libra = score.score;
+    if (libra > 0) {
+      score.score = score.score + libra;
+      game.log(
+        `${libraItem.icon}${libraItem.name}により獲得💠が${libra}増加`,
       );
     }
   }
@@ -351,6 +367,24 @@ function applyDmz(game: ReversiService) {
     if (earned > 0) {
       game.log(
         `${ReversiStone.Sunflower.icon}${ReversiStone.Sunflower.name}により💠${earned}を獲得`,
+      );
+    }
+  }
+}
+
+function applyChick(game: ReversiService) {
+  const chick = game.has(ReversiItemCode.Chick);
+  if (chick) {
+    const earned = game.reversi.board.board.flatMap((row) => {
+      return row.filter((cell) => cell.stone?.code === ReversiStoneCode.Chick);
+    }).length * 2;
+    game.reversi = {
+      score: game.reversi.score + earned,
+      totalScore: game.reversi.score + earned,
+    };
+    if (earned > 0) {
+      game.log(
+        `${ReversiStone.Chick.icon}${ReversiStone.Chick.name}により💠${earned}を獲得`,
       );
     }
   }

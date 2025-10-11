@@ -34,7 +34,7 @@ export default define.page(function ReversiPage() {
           <p>
             ・盤面は4x4から開始され、ラウンドごとに横と縦が交互に拡張されます。
           </p>
-          <p>・バージョン: 0.0.1c</p>
+          <p>・バージョン: 0.0.2</p>
         </section>
         <section class="game">
           <ReversiComponent></ReversiComponent>

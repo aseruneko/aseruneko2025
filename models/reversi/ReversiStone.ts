@@ -28,6 +28,7 @@ export const ReversiStoneCode = {
   Orange: "ORANGE",
   Rat: "RAT",
   Sunflower: "SUNFLOWER",
+  Chick: "CHICK",
 };
 export type ReversiStoneCode =
   (typeof ReversiStoneCode)[keyof typeof ReversiStoneCode];
@@ -132,6 +133,15 @@ export const ReversiStone: { [p in string]: ReversiStone } = {
     coin: 2,
     icon: "🌻",
     name: "ヒマワリ",
+    desc: "白番終了時に💠2を生産",
+  },
+  Chick: {
+    color: ReversiColor.Neutral,
+    code: ReversiStoneCode.Chick,
+    score: 1,
+    coin: 0,
+    icon: "🐤",
+    name: "ひよこ陛下",
     desc: "白番終了時に💠2を生産",
   },
 } as const;

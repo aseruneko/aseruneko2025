@@ -50,6 +50,9 @@ export const ReversiShopFunc = {
     if (toBuy.code === ReversiItemCode.Ring) {
       this.unlock(game, ReversiItemCode.Jewel);
     }
+    if (toBuy.code === ReversiItemCode.EightBall) {
+      this.unlock(game, ReversiItemCode.Pigeon);
+    }
     shop.delete(code);
     game.reversi.coins -= toBuy.price;
     const baught = inv.get(code);
