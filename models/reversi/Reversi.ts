@@ -58,11 +58,11 @@ export const ReversiGoalScore = [
   10,
   25,
   50,
-  150,
+  100,
+  250,
   666,
-  1500,
+  1000,
   5000,
-  10000,
 ] as const;
 
 export const ReversiDefaultShopSlot = 6 as const; // 6
