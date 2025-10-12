@@ -24,6 +24,7 @@ export class ReversiSoundService {
       [ReversiEffect.Purchase]: createRef<HTMLAudioElement>(),
       [ReversiEffect.Unlock]: createRef<HTMLAudioElement>(),
       [ReversiEffect.Reset]: createRef<HTMLAudioElement>(),
+      [ReversiEffect.Use]: createRef<HTMLAudioElement>(),
     };
   }
 
@@ -85,6 +86,7 @@ export const ReversiEffect = {
   Purchase: "PURCHASE",
   Unlock: "UNLOCK",
   Reset: "RESET",
+  Use: "USE",
 } as const;
 export type ReversiEffect = (typeof ReversiEffect)[keyof typeof ReversiEffect];
 

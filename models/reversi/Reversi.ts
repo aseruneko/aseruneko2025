@@ -1,9 +1,5 @@
 import { ReversiBoard } from "./ReversiBoard.ts";
-import {
-  ReversiInitialUnlocked,
-  ReversiItem,
-  ReversiItemCode,
-} from "./ReversiItem.ts";
+import { ReversiItem, ReversiItemCode } from "./ReversiItem.ts";
 import { ReversiLog } from "./ReversiLog.ts";
 
 export interface Reversi {
@@ -15,13 +11,14 @@ export interface Reversi {
   score: number;
   goalScore: number;
   coins: number;
+  vibes: number;
   reroleCost: number;
   totalScore: number;
   totalCoins: number;
   roundScores: number[];
   shop: Map<ReversiItemCode, ReversiItem>;
   inventory: Map<ReversiItemCode, ReversiItem>;
-  unlocked: Set<ReversiItemCode>;
+  itemPool: Set<ReversiItemCode>;
 }
 
 export const ReversiState = {
@@ -41,6 +38,7 @@ export const Reversi = {
       waiting: false,
       round: 1,
       score: 0,
+      vibes: 0,
       goalScore: ReversiGoalScore[0],
       coins: ReversiDefaultCoins,
       totalScore: 0,
@@ -49,7 +47,7 @@ export const Reversi = {
       roundScores: [],
       shop: new Map(),
       inventory: new Map(),
-      unlocked: new Set(ReversiInitialUnlocked),
+      itemPool: new Set(),
     };
   },
   DEFAULT_WIDTH: 4,
@@ -57,14 +55,25 @@ export const Reversi = {
 } as const;
 
 export const ReversiGoalScore = [
-  10,
-  25,
+  8,
+  20,
   50,
   100,
   250,
   666,
   1000,
   5000,
+] as const;
+
+export const ReversiGoalScoreHard = [
+  8,
+  25,
+  75,
+  200,
+  500,
+  1000,
+  5000,
+  10000,
 ] as const;
 
 export const ReversiDefaultShopSlot = 6 as const; // 6

@@ -122,6 +122,7 @@ export const ReversiBoardFunc = {
     if (color === ReversiColor.White) stone = raffleWhiteStone(game);
     board[y][x].stone = stone;
     const score = board[y][x].placeables.get(color) ?? ReversiOutcome.None();
+    const originalScore = { ...score };
     Directions.forEach((d) => {
       if (_countReversible(board, color, plus([x, y], d), d).length === 0) {
         return;
@@ -141,6 +142,7 @@ export const ReversiBoardFunc = {
     } else {
       game.log(`白(${x}, ${y})`);
     }
+    if (originalScore.coin >= 5) applySaxophone(game);
     this.calcPlaceables(game);
   },
   doWhiteTurn(game: ReversiService) {
@@ -282,6 +284,12 @@ function raffleNeutralStones(game: ReversiService) {
 
 function raffleNeutralStone(game: ReversiService, [x, y]: Coord) {
   const pools: ReversiStone[] = [];
+  if (
+    x === ReversiBoardFunc.getWidth(game) - 1 && y === 0 &&
+    game.has(ReversiItemCode.Two)
+  ) {
+    return ReversiStone.Prohibited;
+  }
   if (x === 0 && y === 0 && game.has(ReversiItemCode.Pisces)) {
     return ReversiStone.Prohibited;
   }
@@ -499,4 +507,12 @@ function applyRabbit(game: ReversiService) {
   });
   ReversiBoardFunc.setBoard(game, { board });
   ReversiBoardFunc.calcPlaceables(game);
+}
+
+function applySaxophone(game: ReversiService) {
+  const saxophone = game.has(ReversiItemCode.Saxophone);
+  if (!saxophone) return;
+  const earned = saxophone.value ?? 0;
+  game.log(`${saxophone.icon}${saxophone.name}により🎵${earned}を獲得`);
+  game.reversi = { vibes: game.reversi.vibes + earned };
 }

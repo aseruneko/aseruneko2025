@@ -7,6 +7,10 @@ import {
   ReversiItemCode,
   ReversiItems,
 } from "../../models/reversi/ReversiItem.ts";
+import {
+  ReversiItemChain,
+  ReversiPurchasingChain,
+} from "../../models/reversi/ReversiTofu.ts";
 import { random } from "../../models/shared/Random.ts";
 import { ReversiService } from "./ReversiService.ts";
 import { ReversiEffect } from "./ReversiSoundService.ts";
@@ -37,7 +41,7 @@ export const ReversiShopFunc = {
       reversi.coins -= reversi.reroleCost;
       reversi.reroleCost = Math.ceil(reversi.reroleCost * 1.2);
       game.reversi = reversi;
-      this.unlock(game, ReversiItemCode.Reload);
+      game.tofu.unlockItem(ReversiItemCode.Reload);
     }
   },
   purchaseItem(game: ReversiService, code: ReversiItemCode) {
@@ -47,24 +51,15 @@ export const ReversiShopFunc = {
     if (!toBuy) return;
     if (game.reversi.coins < toBuy.price) return;
     game.sound.play(ReversiEffect.Purchase);
-    if (toBuy.code === ReversiItemCode.Mail) {
-      this.unlock(game, ReversiItemCode.Email);
-    }
-    if (toBuy.code === ReversiItemCode.Ring) {
-      this.unlock(game, ReversiItemCode.Jewel);
-    }
-    if (toBuy.code === ReversiItemCode.EightBall) {
-      this.unlock(game, ReversiItemCode.Pigeon);
-    }
-    if (toBuy.code === ReversiItemCode.Sheep) {
-      this.unlock(game, ReversiItemCode.Rabbit);
-    }
-    if (toBuy.code === ReversiItemCode.Rat) {
-      this.tempUnlock(game, ReversiItemCode.BlackCat);
-    }
-    if (toBuy.code === ReversiItemCode.Chick) {
-      this.tempUnlock(game, ReversiItemCode.Chicken);
-    }
+    game.tofu.tofuable.value = false;
+    const chained = ReversiPurchasingChain[code];
+    (chained ?? []).map((chain) => {
+      game.tofu.unlockItem(chain);
+    });
+    const itemChained = ReversiItemChain[code];
+    (itemChained ?? []).map((chain) => {
+      game.tofu.unlockItem(chain);
+    });
     shop.delete(code);
     game.reversi.coins -= toBuy.price;
     const baught = inv.get(code);
@@ -85,7 +80,12 @@ export const ReversiShopFunc = {
       game.reversi.reroleCost = 5;
     }
     game.reversi = { ...game.reversi, shop, inventory: inv };
+    game.calcItemPool();
     applyClipboard(game, toBuy.code);
+    applyMicrophone(game, toBuy.code);
+    applySaxophone(game, toBuy.code);
+    applyAccordion(game, toBuy.code);
+    applyGuitar(game, toBuy.code);
   },
   shopItemDesc(item: ReversiItem) {
     return item.desc.replace("$v", (item.value ?? 0).toString());
@@ -118,29 +118,6 @@ export const ReversiShopFunc = {
     });
     game.reversi = { inventory: inv };
   },
-  unlock(game: ReversiService, code: ReversiItemCode) {
-    const toUnlock = of(code);
-    if (game.reversi.unlocked.has(code)) return;
-    game.sound.play(ReversiEffect.Unlock);
-    if (toUnlock) {
-      const saved = (game.localStorage.getItem("reversiUnlockedItems")?.split(
-        "/",
-      ) ?? []) as ReversiItemCode[];
-      game.localStorage.setItem(
-        "reversiUnlockedItems",
-        saved.concat(toUnlock.code).join("/"),
-      );
-      game.reversi.unlocked.add(toUnlock.code);
-      game.log(`${toUnlock.icon}${toUnlock.name}がアンロック！`);
-    }
-  },
-  tempUnlock(game: ReversiService, code: ReversiItemCode) {
-    const toUnlock = of(code);
-    if (game.reversi.unlocked.has(code)) return;
-    if (toUnlock) {
-      game.reversi.unlocked.add(toUnlock.code);
-    }
-  },
 };
 
 function addRandomItems(game: ReversiService, n: number) {
@@ -150,7 +127,7 @@ function addRandomItems(game: ReversiService, n: number) {
 }
 
 function addRandomItem(game: ReversiService) {
-  const pool: Set<ReversiItemCode> = new Set([...game.reversi.unlocked]);
+  const pool: Set<ReversiItemCode> = new Set([...game.reversi.itemPool]);
   [...game.reversi.shop.values()].map((item) => {
     pool.delete(item.code);
   });
@@ -163,7 +140,7 @@ function addRandomItem(game: ReversiService) {
 }
 
 function addItem(game: ReversiService, code: ReversiItemCode) {
-  const pool: Set<ReversiItemCode> = new Set([...game.reversi.unlocked]);
+  const pool: Set<ReversiItemCode> = new Set([...game.reversi.itemPool]);
   [...game.reversi.shop.values()].map((item) => {
     pool.delete(item.code);
   });
@@ -181,13 +158,53 @@ function of(code: ReversiItemCode | undefined) {
 }
 
 function adjustPrice(game: ReversiService, item: ReversiItem) {
+  let price = item.price * (2 ** (game.has(item.code)?.amount ?? 0));
+  if (game.has(ReversiItemCode.Katakana)) {
+    if (/[ァ-ヴ]/.test(item.name)) {
+      price = Math.ceil(price / 2);
+    } else {
+      price = price * 2;
+    }
+  }
   return {
     ...item,
-    price: item.price * (2 ** (game.has(item.code)?.amount ?? 0)),
+    price,
   };
 }
 
 function applyClipboard(game: ReversiService, code: ReversiItemCode) {
   if (!game.has(ReversiItemCode.Clipboard)) return;
   addItem(game, code);
+}
+
+function applyMicrophone(game: ReversiService, code: ReversiItemCode) {
+  if (code !== ReversiItemCode.Microphone) return;
+  const microphone = of(code);
+  if (!microphone) return;
+  game.log(`${microphone.icon}${microphone.name}により🎵1を獲得`);
+  game.reversi = { vibes: game.reversi.vibes + 1 };
+}
+
+function applySaxophone(game: ReversiService, code: ReversiItemCode) {
+  if (code !== ReversiItemCode.Saxophone) return;
+  const saxophone = of(code);
+  if (!saxophone) return;
+  game.log(`${saxophone.icon}${saxophone.name}により🎵1を獲得`);
+  game.reversi = { vibes: game.reversi.vibes + 1 };
+}
+
+function applyAccordion(game: ReversiService, code: ReversiItemCode) {
+  if (code !== ReversiItemCode.Accordion) return;
+  const accordion = of(code);
+  if (!accordion) return;
+  game.log(`${accordion.icon}${accordion.name}により🎵1を獲得`);
+  game.reversi = { vibes: game.reversi.vibes + 1 };
+}
+
+function applyGuitar(game: ReversiService, code: ReversiItemCode) {
+  if (code !== ReversiItemCode.Guitar) return;
+  const guitar = of(code);
+  if (!guitar) return;
+  game.log(`${guitar.icon}${guitar.name}により🎵1を獲得`);
+  game.reversi = { vibes: game.reversi.vibes + 1 };
 }

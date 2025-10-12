@@ -2,11 +2,13 @@ import { Signal } from "@preact/signals";
 import {
   Reversi,
   ReversiGoalScore,
+  ReversiGoalScoreHard,
   ReversiState,
 } from "../../models/reversi/Reversi.ts";
 import {
   ReversiItem,
   ReversiItemCode,
+  ReversiItems,
 } from "../../models/reversi/ReversiItem.ts";
 import { ReversiBoardFunc } from "./ReversiBoardFunc.ts";
 import { ReversiCellFunc } from "./ReversiCellFunc.ts";
@@ -14,17 +16,26 @@ import { ReversiColor } from "../../models/reversi/ReversiStone.ts";
 import { ReversiShopFunc } from "./ReversiShopFunc.ts";
 import { ReversiEffect, ReversiSoundService } from "./ReversiSoundService.ts";
 import { at } from "../../models/shared/TwoDimension.ts";
+import { ReversiTofuService } from "./tofu/ReversiTofuService.ts";
+import {
+  ReversiPackCode,
+  ReversiPacks,
+} from "../../models/reversi/ReversiPack.ts";
+import { ReversiItemChain } from "../../models/reversi/ReversiTofu.ts";
 
 export class ReversiService {
-  readonly version = "v0.0.4a";
+  readonly version = "v0.1.0";
+  readonly tofu: ReversiTofuService;
 
   constructor(
     private _reversi: Signal<Reversi>,
     public localStorage: Storage,
     public sound: ReversiSoundService,
   ) {
+    this.tofu = new ReversiTofuService(this, localStorage);
+    this.calcEmblems();
+    this.calcItemPool();
     ReversiBoardFunc.initBoard(this);
-    this.initialUnlock();
     ReversiShopFunc.rerole(this, true);
   }
 
@@ -51,12 +62,31 @@ export class ReversiService {
     return ReversiCellFunc.isClickable(this, [x, y]);
   }
 
-  initialUnlock() {
-    const unlocked = (this.localStorage.getItem("reversiUnlockedItems")?.split(
-      "/",
-    ) ?? []) as ReversiItemCode[];
-    unlocked.forEach((code) => this.reversi.unlocked.add(code));
-    this.reversi = { unlocked: this.reversi.unlocked };
+  calcItemPool() {
+    const pool = this.reversi.itemPool;
+    pool.clear();
+    ReversiPacks[ReversiPackCode.Basic].items.map((c) => pool.add(c));
+    ReversiPacks[ReversiPackCode.Hidden].items.map((c) => {
+      if (this.tofu.isUnlocked(c)) pool.add(c);
+    });
+    ReversiPacks[ReversiPackCode.Chain].items.map((c) => {
+      const premises = ReversiItemChain[c];
+      if ((premises ?? []).every((p) => this.has(p))) pool.add(c);
+    });
+    this.tofu.tofu.value.activePacks.map((p) => {
+      ReversiPacks[p].items.map((i) => pool.add(i));
+    });
+    this.reversi = { itemPool: pool };
+  }
+
+  calcEmblems() {
+    const inv = this.reversi.inventory;
+    inv.clear();
+    this.tofu.tofu.value.activeEmblems.map((e) => {
+      const item = ReversiItems.find((i) => i.code === e)!;
+      inv.set(item.code, { ...item, amount: 1 });
+    });
+    this.reversi = { inventory: inv };
   }
 
   startRound() {
@@ -66,6 +96,7 @@ export class ReversiService {
       state: ReversiState.InRound,
     };
     ReversiBoardFunc.initBoard(this);
+    this.tofu.tofuable.value = false;
     this.log(
       `ROUND${this.reversi.round} 開始 : 目標💠${this.reversi.goalScore}`,
     );
@@ -78,6 +109,8 @@ export class ReversiService {
     applyCapricorn(this);
     applyPisces(this);
     applyMusic(this);
+    applyMicrophone(this);
+    applyAccordion(this);
     this.reversi = {
       totalScore: this.reversi.totalScore + this.reversi.score,
       roundScores: [...this.reversi.roundScores, this.reversi.score],
@@ -89,13 +122,8 @@ export class ReversiService {
       this.sound.play(ReversiEffect.GameOver);
       this.log(`GAME OVER : 獲得💠${this.reversi.score}`);
       this.reversi = { state: ReversiState.GameOver };
-      ReversiShopFunc.unlock(this, ReversiItemCode.Orange);
-      ReversiShopFunc.unlock(this, ReversiItemCode.Dmz);
-      ReversiShopFunc.unlock(this, ReversiItemCode.Aquarias);
-      ReversiShopFunc.unlock(this, ReversiItemCode.Libra);
-      ReversiShopFunc.unlock(this, ReversiItemCode.Chick);
-      ReversiShopFunc.unlock(this, ReversiItemCode.Capricorn);
-      ReversiShopFunc.unlock(this, ReversiItemCode.Pisces);
+      this.tofu.earnTofuValue();
+      this.tofu.tofuable.value = true;
       return;
     } else {
       this.log(
@@ -107,21 +135,19 @@ export class ReversiService {
           `GAME CLEAR : THANK YOU FOR PLAYING!`,
         );
         this.reversi = { state: ReversiState.GameClear };
-        ReversiShopFunc.unlock(this, ReversiItemCode.Orange);
-        ReversiShopFunc.unlock(this, ReversiItemCode.Dmz);
-        ReversiShopFunc.unlock(this, ReversiItemCode.Aquarias);
-        ReversiShopFunc.unlock(this, ReversiItemCode.Libra);
-        ReversiShopFunc.unlock(this, ReversiItemCode.Chick);
-        ReversiShopFunc.unlock(this, ReversiItemCode.Capricorn);
-        ReversiShopFunc.unlock(this, ReversiItemCode.Pisces);
+        this.tofu.earnTofuValue();
+        this.tofu.tofuable.value = true;
         return;
       }
     }
     this.sound.play(ReversiEffect.RoundClear);
     applyBank(this);
+    const goalScore = this.has(ReversiItemCode.One)
+      ? ReversiGoalScoreHard[this.reversi.round]
+      : ReversiGoalScore[this.reversi.round];
     this.reversi = {
       round: this.reversi.round + 1,
-      goalScore: ReversiGoalScore[this.reversi.round],
+      goalScore,
       state: ReversiState.Interval,
       reroleCost: 5 * (this.has(ReversiItemCode.Capricorn) ? 2 : 1),
     };
@@ -167,17 +193,19 @@ export class ReversiService {
     ReversiShopFunc.purchaseItem(this, code);
   }
 
-  onClickReset() {
-    this.sound.play(ReversiEffect.Reset);
+  onClickReset(se: boolean = true) {
+    if (se) this.sound.play(ReversiEffect.Reset);
     this._reversi.value = Reversi.Default();
     this.reversi = this._reversi.value;
-    this.initialUnlock();
+    this.calcEmblems();
+    this.calcItemPool();
     ReversiBoardFunc.initBoard(this);
     ReversiShopFunc.rerole(this, true);
   }
 
   onClickUse(item: ReversiItem) {
     if (!this.isUsable(item)) return;
+    this.sound.play(ReversiEffect.Use);
     const inventory = this.reversi.inventory;
     inventory.set(item.code, {
       ...item,
@@ -192,18 +220,19 @@ export class ReversiService {
     if (item.code === ReversiItemCode.Reload) applyReload(this);
     if (item.code === ReversiItemCode.Hammer) applyHammer(this);
     if (item.code === ReversiItemCode.FastUp) applyFastUp(this);
+    if (item.code === ReversiItemCode.Guitar) applyGuitar(this);
   }
 
   onClickLibrary() {
-    ReversiShopFunc.unlock(this, ReversiItemCode.GradCap);
+    this.tofu.unlockItem(ReversiItemCode.GradCap);
   }
 
   onClickCopy() {
-    ReversiShopFunc.unlock(this, ReversiItemCode.Clipboard);
+    this.tofu.unlockItem(ReversiItemCode.Clipboard);
   }
 
   onClickStartMusic() {
-    ReversiShopFunc.unlock(this, ReversiItemCode.Music);
+    this.tofu.unlockItem(ReversiItemCode.Music);
   }
 
   isReroleDisabled() {
@@ -389,4 +418,37 @@ function applyFastUp(game: ReversiService) {
   });
   ReversiBoardFunc.setBoard(game, { board });
   ReversiBoardFunc.calcPlaceables(game);
+}
+
+function applyGuitar(game: ReversiService) {
+  ReversiShopFunc.reactivate(game, ReversiItemCode.Guitar);
+  if (game.reversi.vibes < 1) {
+    game.log(`しかし何も起こらなかった！`);
+    return;
+  }
+  game.reversi = { vibes: game.reversi.vibes - 1 };
+  ReversiShopFunc.rerole(game, true);
+}
+
+function applyMicrophone(game: ReversiService) {
+  const microphone = game.has(ReversiItemCode.Microphone);
+  if (!microphone) return;
+  const earned = microphone.value ?? 0;
+  game.log(`${microphone.icon}${microphone.name}により🎵${earned}を獲得`);
+  game.reversi = { vibes: game.reversi.vibes + earned };
+}
+
+function applyAccordion(game: ReversiService) {
+  const accordion = game.has(ReversiItemCode.Accordion);
+  if (!accordion) return;
+  const earned = game.reversi.vibes * (accordion.value ?? 0);
+  game.log(
+    `${accordion.icon}${accordion.name}により💠${earned}🪙${earned}を獲得`,
+  );
+  game.reversi = {
+    coins: game.reversi.coins + earned,
+    score: game.reversi.score + earned,
+    totalCoins: game.reversi.coins + earned,
+    totalScore: game.reversi.score + earned,
+  };
 }

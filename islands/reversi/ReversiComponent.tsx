@@ -5,6 +5,7 @@ import { Reversi, ReversiState } from "../../models/reversi/Reversi.ts";
 import { ReversiShopFunc } from "./ReversiShopFunc.ts";
 import { ReversiStoneCode } from "../../models/reversi/ReversiStone.ts";
 import { ReversiMusic, ReversiSoundService } from "./ReversiSoundService.ts";
+import ReversiTofuComponent from "./tofu/ReversiTofuComponent.tsx";
 
 export default function ReversiComponent() {
   const reversi = useSignal(Reversi.Default());
@@ -33,6 +34,7 @@ export default function ReversiComponent() {
       <audio ref={sound.effect.START} src="mp3/reversi/start.mp3"></audio>
       <audio ref={sound.effect.PUT} src="mp3/reversi/put.mp3"></audio>
       <audio ref={sound.effect.RESET} src="mp3/reversi/reset.mp3"></audio>
+      <audio ref={sound.effect.USE} src="mp3/reversi/use.mp3"></audio>
       <div class="audio">
         <div class="sliders">
           <p>
@@ -195,7 +197,11 @@ export default function ReversiComponent() {
               </div>
             </div>
             <div class="shop-state">
-              <p class="money">🪙{reversi.value.coins}</p>
+              <p class="money">
+                <span>🪙{reversi.value.coins}</span>
+                {reversi.value.vibes > 0 && <span>🎵{reversi.value.vibes}
+                </span>}
+              </p>
               <button
                 type="button"
                 disabled={game.isReroleDisabled()}
@@ -276,6 +282,7 @@ export default function ReversiComponent() {
           </div>
         </div>
       </div>
+      <ReversiTofuComponent tofu={game.tofu}></ReversiTofuComponent>
       <div class="my-score">
         <p>
           <span>図鑑ができました👉️</span>
@@ -303,9 +310,16 @@ export default function ReversiComponent() {
         <textarea id="myScore">{game.playLog()}</textarea>
       </div>
       <div class="done">
+        <b>v0.1.0</b>
+        <p>・🔥炎上豆腐店🔥を追加</p>
+        <p>・オレンジパック（🍊🌻🐤🐔）の追加</p>
+        <p>・十二星座パック（♎♒♑♓）の追加</p>
+        <p>・楽器隊パック（🎤🎷🪗🎸）の追加</p>
+        <p>・プレミアム殿堂パック（🏦）の追加</p>
+        <p>・🈂️1️⃣2️⃣の追加</p>
         <b>v0.0.4a</b>
         <p>・図鑑がネタバレをしないように変更</p>
-        <p>・🎓📋️🎵追加。要解禁</p>
+        <p>・🎓📋️🎶追加。要解禁</p>
         <b>v0.0.4</b>
         <p>・図鑑を追加</p>
         <p>・一番最初だけリロールコストを0にした</p>

@@ -1,22 +1,20 @@
-import {
-  ReversiItem,
-  ReversiItemCode,
-  ReversiItems,
-} from "../../models/reversi/ReversiItem.ts";
+import { ReversiItem, ReversiItems } from "../../models/reversi/ReversiItem.ts";
 import {
   ReversiColor,
   ReversiStone,
 } from "../../models/reversi/ReversiStone.ts";
 import { ReversiShopFunc } from "./ReversiShopFunc.ts";
+import { ReversiTofuService } from "./tofu/ReversiTofuService.ts";
 
 export default function ReversiLibraryComponent() {
-  const unlocked =
-    (globalThis.localStorage.getItem("reversiUnlockedItems")?.split(
-      "/",
-    ) ?? []) as ReversiItemCode[];
+  const unlocked = ReversiTofuService.unlockedItems(globalThis.localStorage);
   function isHidden(item: ReversiItem) {
-    if (item.hiddenUntil === undefined) return false;
-    return !unlocked.includes(item.hiddenUntil);
+    if (
+      ReversiTofuService.isBasic(item.code) ||
+      ReversiTofuService.isDeprecated(item.code) ||
+      ReversiTofuService.isBanned(item.code)
+    ) return false;
+    return !unlocked.includes(item.code);
   }
   function isHiddenStone(stone: ReversiStone) {
     if (stone.hiddenUntil === undefined) return false;
@@ -29,10 +27,16 @@ export default function ReversiLibraryComponent() {
         <p class="alert">没アイテムもあります！</p>
       </div>
       <div class="items-desc">
-        <p>アイテム（全{ReversiItems.length}種）</p>
+        <p>
+          アイテム（全{[...Object.values(ReversiItems)].filter((item) =>
+            !ReversiTofuService.isEmblem(item.code)
+          ).length}種）
+        </p>
       </div>
       <div class="items shop">
-        {[...Object.values(ReversiItems)].map((item, i) => {
+        {[...Object.values(ReversiItems)].filter((item) =>
+          !ReversiTofuService.isEmblem(item.code)
+        ).map((item, i) => {
           return (
             <div
               class={"shop-item" + (isHidden(item) ? " hidden" : "")}
@@ -84,6 +88,73 @@ export default function ReversiLibraryComponent() {
                 disabled
               >
                 🪙{item.price}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <div class="items-desc">
+        <p>
+          紋章（全{[...Object.values(ReversiItems)].filter((item) =>
+            ReversiTofuService.isEmblem(item.code)
+          ).length}種）
+        </p>
+      </div>
+      <div class="items shop">
+        {[...Object.values(ReversiItems)].filter((item) =>
+          ReversiTofuService.isEmblem(item.code)
+        ).map((item, i) => {
+          return (
+            <div
+              class={"shop-item" + (isHidden(item) ? " hidden" : "")}
+              key={i}
+            >
+              <div class="icon-and-name">
+                <p class="icon">{item.icon}</p>
+                <div>
+                  <p class="name">
+                    <span>{item.name}</span>
+                    {!item.isUnique && (
+                      <span class="tooltip">
+                        [重複]
+                        <div class="tooltip-text">
+                          <b>重複</b>
+                          <p>
+                            このアイテムは複数回購入することができ、効果が蓄積していきます。
+                          </p>
+                          <p>ただし、購入の度に値段が倍になります。</p>
+                        </div>
+                      </span>
+                    )}
+                    {item.used !== undefined && (
+                      <span class="tooltip">
+                        [発動]
+                        <div class="tooltip-text">
+                          <b>発動</b>
+                          <p>
+                            このアイテムはアイテム欄をクリックすると効果が適用されます。
+                          </p>
+                          <p>
+                            使用回数はラウンド終了時に回復します。
+                          </p>
+                        </div>
+                      </span>
+                    )}
+                  </p>
+                  {isHidden(item) && <p class="desc">未解禁のアイテムです</p>}
+                  {!isHidden(item) &&
+                    (
+                      <p class="desc">
+                        {ReversiShopFunc.shopItemDesc(item)}
+                      </p>
+                    )}
+                </div>
+              </div>
+              <button
+                type="button"
+                disabled
+              >
+                📛{item.price}
               </button>
             </div>
           );

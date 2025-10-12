@@ -12,7 +12,6 @@ export interface ReversiItem {
   value?: number;
   used?: boolean;
   usedFor?: ReversiState;
-  hiddenUntil?: ReversiItemCode;
 }
 
 export const ReversiItemCode = {
@@ -55,35 +54,42 @@ export const ReversiItemCode = {
   GradCap: "GRAD_CAP",
   Clipboard: "CLIPBOARD",
   Music: "MUSIC",
+  Microphone: "MICROPHONE",
+  Saxophone: "SAXOPHONE",
+  Accordion: "ACCORDION",
+  Guitar: "GUITAR",
+  Katakana: "KATAKANA",
+  One: "ONE",
+  Two: "TWO",
 } as const;
 export type ReversiItemCode =
   (typeof ReversiItemCode)[keyof typeof ReversiItemCode];
 
-export const ReversiInitialUnlocked = [
-  ReversiItemCode.Yokoplus,
-  ReversiItemCode.Tateplus,
-  ReversiItemCode.Bank,
-  ReversiItemCode.Moai,
-  ReversiItemCode.Mail,
-  ReversiItemCode.Ring,
-  ReversiItemCode.Cart,
-  ReversiItemCode.Pass,
-  ReversiItemCode.EightBall,
-  ReversiItemCode.WhiteMonolis,
-  ReversiItemCode.BlackMonolis,
-  ReversiItemCode.Abacus,
-  ReversiItemCode.Study,
-  ReversiItemCode.Interest,
-  ReversiItemCode.Insurance,
-  ReversiItemCode.JudgeMoon,
-  ReversiItemCode.Rat,
-  ReversiItemCode.Hammer,
-  ReversiItemCode.Sheep,
-  ReversiItemCode.LibraMoon,
-  ReversiItemCode.FastUp,
-] as const;
-
 export const ReversiItems: ReversiItem[] = [
+  {
+    code: ReversiItemCode.Katakana,
+    icon: "🈂️",
+    name: "カタカナの紋章",
+    desc: "カタカナを含むアイテムの値段が半分。それ以外は倍",
+    price: 50,
+    isUnique: true,
+  },
+  {
+    code: ReversiItemCode.One,
+    icon: "1️⃣",
+    name: "１の紋章",
+    desc: "要求スコアが厳しくなる。獲得📛が倍",
+    price: 50,
+    isUnique: true,
+  },
+  {
+    code: ReversiItemCode.Two,
+    icon: "2️⃣",
+    name: "２の紋章",
+    desc: "盤面の右上を埋める。獲得📛が倍",
+    price: 100,
+    isUnique: true,
+  },
   {
     code: ReversiItemCode.Yokoplus,
     icon: "↔️",
@@ -118,7 +124,6 @@ export const ReversiItems: ReversiItem[] = [
     desc: "白番の後に追加の白番が増える。反転した石の総💠が2倍",
     price: 5,
     isUnique: true,
-    hiddenUntil: ReversiItemCode.Aquarias,
   },
   {
     code: ReversiItemCode.Capricorn,
@@ -127,16 +132,14 @@ export const ReversiItems: ReversiItem[] = [
     desc: "次のラウンドからリロールコストが2倍。ラウンド終了前に💠が1.2倍",
     price: 5,
     isUnique: true,
-    hiddenUntil: ReversiItemCode.Capricorn,
   },
   {
     code: ReversiItemCode.Pisces,
     icon: "♓",
     name: "うお座の徽章",
-    desc: "番の左上と右下を塞ぐ。ラウンド終了前に💠が1.3倍",
+    desc: "盤面の左上と右下を塞ぐ。ラウンド終了前に💠が1.3倍",
     price: 5,
     isUnique: true,
-    hiddenUntil: ReversiItemCode.Pisces,
   },
   {
     code: ReversiItemCode.Libra,
@@ -145,7 +148,6 @@ export const ReversiItems: ReversiItem[] = [
     desc: "盤面の幅-2(最低4)。反転した石の総💠が2倍",
     price: 5,
     isUnique: true,
-    hiddenUntil: ReversiItemCode.Libra,
   },
   {
     code: ReversiItemCode.Reload,
@@ -157,7 +159,6 @@ export const ReversiItems: ReversiItem[] = [
     value: 1,
     used: false,
     usedFor: "INTERVAL",
-    hiddenUntil: ReversiItemCode.Reload,
   },
   {
     code: ReversiItemCode.FastUp,
@@ -202,7 +203,6 @@ export const ReversiItems: ReversiItem[] = [
     value: 3,
     used: false,
     usedFor: "IN_ROUND",
-    hiddenUntil: ReversiItemCode.Pigeon,
   },
   {
     code: ReversiItemCode.EightBall,
@@ -252,7 +252,6 @@ export const ReversiItems: ReversiItem[] = [
     price: 6,
     isUnique: false,
     value: 30,
-    hiddenUntil: ReversiItemCode.Dmz,
   },
   {
     code: ReversiItemCode.Mail,
@@ -271,7 +270,6 @@ export const ReversiItems: ReversiItem[] = [
     price: 6,
     isUnique: false,
     value: 20,
-    hiddenUntil: ReversiItemCode.Email,
   },
   {
     code: ReversiItemCode.Ring,
@@ -290,7 +288,6 @@ export const ReversiItems: ReversiItem[] = [
     price: 6,
     isUnique: false,
     value: 20,
-    hiddenUntil: ReversiItemCode.Jewel,
   },
   {
     code: ReversiItemCode.Sheep,
@@ -309,7 +306,6 @@ export const ReversiItems: ReversiItem[] = [
     price: 4,
     isUnique: false,
     value: 20,
-    hiddenUntil: ReversiItemCode.Rabbit,
   },
   {
     code: ReversiItemCode.Orange,
@@ -319,7 +315,6 @@ export const ReversiItems: ReversiItem[] = [
     price: 8,
     isUnique: false,
     value: 20,
-    hiddenUntil: ReversiItemCode.Orange,
   },
   {
     code: ReversiItemCode.Chick,
@@ -329,7 +324,6 @@ export const ReversiItems: ReversiItem[] = [
     price: 12,
     isUnique: false,
     value: 20,
-    hiddenUntil: ReversiItemCode.Chick,
   },
   {
     code: ReversiItemCode.Chicken,
@@ -339,7 +333,6 @@ export const ReversiItems: ReversiItem[] = [
     price: 8,
     isUnique: false,
     value: 15,
-    hiddenUntil: ReversiItemCode.Chick,
   },
   {
     code: ReversiItemCode.Insurance,
@@ -402,16 +395,14 @@ export const ReversiItems: ReversiItem[] = [
     price: 12,
     isUnique: false,
     value: 1,
-    hiddenUntil: ReversiItemCode.GradCap,
   },
   {
     code: ReversiItemCode.Music,
-    icon: "🎵",
+    icon: "🎶",
     name: "鳴り止まないっ",
     desc: "ラウンド終了前、BGMを再生しているなら、所持💠の3%を得る",
     price: 3,
     isUnique: true,
-    hiddenUntil: ReversiItemCode.Music,
   },
   {
     code: ReversiItemCode.Bank,
@@ -438,7 +429,6 @@ export const ReversiItems: ReversiItem[] = [
     desc: "重複アイテムの購入時、再入荷する",
     price: 4,
     isUnique: false,
-    hiddenUntil: ReversiItemCode.Clipboard,
   },
   {
     code: ReversiItemCode.BlackMonolis,
@@ -455,5 +445,43 @@ export const ReversiItems: ReversiItem[] = [
     desc: "⚪️の配置時の変換効果が、白による反転時にも発生する",
     price: 15,
     isUnique: true,
+  },
+  {
+    code: ReversiItemCode.Microphone,
+    icon: "🎤",
+    name: "マイクロフォン",
+    desc: "購入時に🎵1獲得。ラウンド終了時に🎵$v獲得",
+    price: 4,
+    value: 1,
+    isUnique: false,
+  },
+  {
+    code: ReversiItemCode.Saxophone,
+    icon: "🎷",
+    name: "サクソフォン",
+    desc: "購入時に🎵1獲得。反転した石の総🪙が5以上の場合🎵$v獲得",
+    price: 4,
+    value: 1,
+    isUnique: false,
+  },
+  {
+    code: ReversiItemCode.Accordion,
+    icon: "🪗",
+    name: "アコーディオン",
+    desc: "購入時に🎵1獲得。ラウンド終了時に🪙と💠を(総🎵x$v)だけ獲得",
+    price: 6,
+    value: 1,
+    isUnique: false,
+  },
+  {
+    code: ReversiItemCode.Guitar,
+    icon: "🎸",
+    name: "エレキギター",
+    desc: "購入時に🎵1獲得。$v回使用可。🎵1を消費し、リロールする",
+    price: 4,
+    isUnique: true,
+    value: 99,
+    used: false,
+    usedFor: "INTERVAL",
   },
 ] as const;
