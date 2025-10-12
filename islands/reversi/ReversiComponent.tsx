@@ -69,7 +69,10 @@ export default function ReversiComponent() {
             (
               <button
                 type="button"
-                onClick={() => game.sound.begin(ReversiMusic.Main)}
+                onClick={() => {
+                  game.onClickStartMusic();
+                  game.sound.begin(ReversiMusic.Main);
+                }}
               >
                 ▶️ BGM
               </button>
@@ -275,17 +278,24 @@ export default function ReversiComponent() {
       </div>
       <div class="my-score">
         <p>
-          <span>図鑑ができました（ネタバレ注意）👉️</span>
-          <a href="reversi/library" target="_blank">図鑑（新しいタブで開く）</a>
+          <span>図鑑ができました👉️</span>
+          <a
+            href="reversi/library"
+            target="_blank"
+            onClick={() => game.onClickLibrary()}
+          >
+            🎓図鑑（新しいタブで開く）
+          </a>
         </p>
         <p>
           <span>プレイ記録を貼り付けて友達を驚かせましょう！</span>
           <button
             type="button"
             onClick={() =>
-              navigator.clipboard.writeText(game.playLog()).then(() =>
-                globalThis.alert("コピーしました")
-              )}
+              navigator.clipboard.writeText(game.playLog()).then(() => {
+                game.onClickCopy();
+                globalThis.alert("コピーしました");
+              })}
           >
             📋️コピー
           </button>
@@ -293,6 +303,9 @@ export default function ReversiComponent() {
         <textarea id="myScore">{game.playLog()}</textarea>
       </div>
       <div class="done">
+        <b>v0.0.4a</b>
+        <p>・図鑑がネタバレをしないように変更</p>
+        <p>・🎓📋️🎵追加。要解禁</p>
         <b>v0.0.4</b>
         <p>・図鑑を追加</p>
         <p>・一番最初だけリロールコストを0にした</p>
@@ -301,8 +314,7 @@ export default function ReversiComponent() {
         <p>・🐑🌕⏫追加</p>
         <p>・🐈‍⬛追加。🐀購入後にのみ出現します</p>
         <p>・🐔追加。🐤購入後にのみ出現します</p>
-        <p>・🐇追加。🐑購入後に解禁</p>
-        <p>・♑♓追加。プレイ後に解禁</p>
+        <p>・🐇♑♓追加。要解禁</p>
         <p>・スマートフォン向け調整</p>
         <b>v0.0.3</b>
         <p>・スマートフォン対応</p>
@@ -312,7 +324,8 @@ export default function ReversiComponent() {
         <p>・石のアイコンがズレて表示されるのを軽減</p>
         <b>v0.0.2</b>
         <p>・初期アイテム枠を5から6に変更。バランス微調整。</p>
-        <p>・🔨追加。🕊️♎🐤追加（プレイ後に解禁）</p>
+        <p>・🔨追加。</p>
+        <p>・🕊️♎🐤追加。要解禁</p>
       </div>
     </div>
   );

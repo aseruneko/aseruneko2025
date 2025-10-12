@@ -16,7 +16,7 @@ import { ReversiEffect, ReversiSoundService } from "./ReversiSoundService.ts";
 import { at } from "../../models/shared/TwoDimension.ts";
 
 export class ReversiService {
-  readonly version = "v0.0.4";
+  readonly version = "v0.0.4a";
 
   constructor(
     private _reversi: Signal<Reversi>,
@@ -74,8 +74,10 @@ export class ReversiService {
   endRound() {
     applyJudgeMoon(this);
     applyLibraMoon(this);
+    applyGradCap(this);
     applyCapricorn(this);
     applyPisces(this);
+    applyMusic(this);
     this.reversi = {
       totalScore: this.reversi.totalScore + this.reversi.score,
       roundScores: [...this.reversi.roundScores, this.reversi.score],
@@ -192,6 +194,18 @@ export class ReversiService {
     if (item.code === ReversiItemCode.FastUp) applyFastUp(this);
   }
 
+  onClickLibrary() {
+    ReversiShopFunc.unlock(this, ReversiItemCode.GradCap);
+  }
+
+  onClickCopy() {
+    ReversiShopFunc.unlock(this, ReversiItemCode.Clipboard);
+  }
+
+  onClickStartMusic() {
+    ReversiShopFunc.unlock(this, ReversiItemCode.Music);
+  }
+
   isReroleDisabled() {
     if (this.reversi.state !== ReversiState.Interval) return true;
     return this.reversi.coins < this.reversi.reroleCost;
@@ -281,6 +295,7 @@ function applyJudgeMoon(game: ReversiService) {
     if (earned > 0) game.log(`${moon.icon}${moon.name}により💠${earned}を獲得`);
   }
 }
+
 function applyLibraMoon(game: ReversiService) {
   const moon = game.has(ReversiItemCode.LibraMoon);
   if (moon) {
@@ -292,6 +307,21 @@ function applyLibraMoon(game: ReversiService) {
       totalCoins: game.reversi.totalCoins + earned,
     };
     if (earned > 0) game.log(`${moon.icon}${moon.name}により🪙${earned}を獲得`);
+  }
+}
+
+function applyGradCap(game: ReversiService) {
+  const cap = game.has(ReversiItemCode.GradCap);
+  if (cap) {
+    const earned = Math.ceil(
+      game.reversi.score * game.reversi.inventory.size *
+        (cap.currentValue ?? 0) / 100,
+    );
+    game.reversi = {
+      score: game.reversi.score + earned,
+      totalScore: game.reversi.totalScore + earned,
+    };
+    if (earned > 0) game.log(`${cap.icon}${cap.name}により💠${earned}を獲得`);
   }
 }
 
@@ -319,6 +349,20 @@ function applyPisces(game: ReversiService) {
     };
     if (earned > 0) {
       game.log(`${pisces.icon}${pisces.name}により💠${earned}を獲得`);
+    }
+  }
+}
+
+function applyMusic(game: ReversiService) {
+  const music = game.has(ReversiItemCode.Music);
+  if (music && game.sound.playing.value !== undefined) {
+    const earned = Math.ceil(game.reversi.score * 0.03);
+    game.reversi = {
+      score: game.reversi.score + earned,
+      totalScore: game.reversi.totalScore + earned,
+    };
+    if (earned > 0) {
+      game.log(`${music.icon}${music.name}により💠${earned}を獲得`);
     }
   }
 }

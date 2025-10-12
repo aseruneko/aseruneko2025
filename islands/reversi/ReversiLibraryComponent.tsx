@@ -1,4 +1,8 @@
-import { ReversiItems } from "../../models/reversi/ReversiItem.ts";
+import {
+  ReversiItem,
+  ReversiItemCode,
+  ReversiItems,
+} from "../../models/reversi/ReversiItem.ts";
 import {
   ReversiColor,
   ReversiStone,
@@ -6,11 +10,22 @@ import {
 import { ReversiShopFunc } from "./ReversiShopFunc.ts";
 
 export default function ReversiLibraryComponent() {
+  const unlocked =
+    (globalThis.localStorage.getItem("reversiUnlockedItems")?.split(
+      "/",
+    ) ?? []) as ReversiItemCode[];
+  function isHidden(item: ReversiItem) {
+    if (item.hiddenUntil === undefined) return false;
+    return !unlocked.includes(item.hiddenUntil);
+  }
+  function isHiddenStone(stone: ReversiStone) {
+    if (stone.hiddenUntil === undefined) return false;
+    return !unlocked.includes(stone.hiddenUntil);
+  }
   return (
     <div class="reversi-library-component">
       <div class="desc">
         <p>全てのアイテムと石のリストです</p>
-        <p class="alert">未解禁のものもあるのでネタバレ注意！</p>
         <p class="alert">没アイテムもあります！</p>
       </div>
       <div class="items-desc">
@@ -19,7 +34,10 @@ export default function ReversiLibraryComponent() {
       <div class="items shop">
         {[...Object.values(ReversiItems)].map((item, i) => {
           return (
-            <div class="shop-item" key={i}>
+            <div
+              class={"shop-item" + (isHidden(item) ? " hidden" : "")}
+              key={i}
+            >
               <div class="icon-and-name">
                 <p class="icon">{item.icon}</p>
                 <div>
@@ -52,7 +70,13 @@ export default function ReversiLibraryComponent() {
                       </span>
                     )}
                   </p>
-                  <p class="desc">{ReversiShopFunc.shopItemDesc(item)}</p>
+                  {isHidden(item) && <p class="desc">未解禁のアイテムです</p>}
+                  {!isHidden(item) &&
+                    (
+                      <p class="desc">
+                        {ReversiShopFunc.shopItemDesc(item)}
+                      </p>
+                    )}
                 </div>
               </div>
               <button
@@ -71,24 +95,33 @@ export default function ReversiLibraryComponent() {
       <div class="stones shop">
         {[...Object.values(ReversiStone)].map((stone, i) => {
           return (
-            <div class="shop-item" key={i}>
+            <div
+              class={"shop-item" + (isHiddenStone(stone) ? " hidden" : "")}
+              key={i}
+            >
               <div class="icon-and-name">
                 <p class="icon">{stone.icon}</p>
                 <div>
                   <p class="name">
                     <span>{stone.name}</span>
                   </p>
-                  <p class="desc">
-                    <p>
-                      💠{stone.score}🪙{stone.coin} -{" "}
-                      {stone.color === ReversiColor.Black
-                        ? "黒"
-                        : stone.color === ReversiColor.White
-                        ? "白"
-                        : "中立"}
-                    </p>
-                    <p>{stone.desc}</p>
-                  </p>
+                  {isHiddenStone(stone) && (
+                    <div class="desc">未解禁のアイテムで出現</div>
+                  )}
+                  {!isHiddenStone(stone) &&
+                    (
+                      <div class="desc">
+                        <p>
+                          💠{stone.score}🪙{stone.coin} -
+                          {stone.color === ReversiColor.Black
+                            ? "黒"
+                            : stone.color === ReversiColor.White
+                            ? "白"
+                            : "中立"}
+                        </p>
+                        <p>{stone.desc}</p>
+                      </div>
+                    )}
                 </div>
               </div>
             </div>

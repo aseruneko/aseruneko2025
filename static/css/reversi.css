@@ -364,6 +364,12 @@ footer {
       font-weight: 700;
     }
   }
+  .shop-item.hidden {
+    background-color: #8d8f8f;
+    .desc {
+      color: #494b4b;
+    }
+  }
   .items-desc, .stones-desc {
     border: solid 1px #dfe0e0;
     box-shadow: 0 0 3px 1px #dfe0e0;

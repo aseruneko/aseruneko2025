@@ -1,3 +1,5 @@
+import { ReversiItemCode } from "./ReversiItem.ts";
+
 export interface ReversiStone {
   color: ReversiColor;
   code: ReversiStoneCode;
@@ -7,6 +9,7 @@ export interface ReversiStone {
   name: string;
   desc: string;
   state?: ReversiStoneState;
+  hiddenUntil?: ReversiItemCode;
 }
 
 export const ReversiColor = {
@@ -112,6 +115,7 @@ export const ReversiStone: { [p in string]: ReversiStone } = {
     icon: "📧",
     name: "e-mail",
     desc: "効果なし",
+    hiddenUntil: ReversiItemCode.Email,
   },
   Ring: {
     color: ReversiColor.White,
@@ -130,6 +134,7 @@ export const ReversiStone: { [p in string]: ReversiStone } = {
     icon: "💎",
     name: "宝石",
     desc: "効果なし",
+    hiddenUntil: ReversiItemCode.Jewel,
   },
   Sheep: {
     color: ReversiColor.White,
@@ -148,6 +153,7 @@ export const ReversiStone: { [p in string]: ReversiStone } = {
     icon: "🐇",
     name: "わんぱくウサギ",
     desc: "白番終了時に可能なら上に自身を複製",
+    hiddenUntil: ReversiItemCode.Rabbit,
   },
   Prohibited: {
     color: ReversiColor.Neutral,
@@ -166,6 +172,7 @@ export const ReversiStone: { [p in string]: ReversiStone } = {
     icon: "🍊",
     name: "オレンジ",
     desc: "効果なし",
+    hiddenUntil: ReversiItemCode.Orange,
   },
   Sunflower: {
     color: ReversiColor.Neutral,
@@ -175,6 +182,7 @@ export const ReversiStone: { [p in string]: ReversiStone } = {
     icon: "🌻",
     name: "ヒマワリ",
     desc: "白番終了時に💠2を生産",
+    hiddenUntil: ReversiItemCode.Dmz,
   },
   Chick: {
     color: ReversiColor.Neutral,
@@ -184,6 +192,7 @@ export const ReversiStone: { [p in string]: ReversiStone } = {
     icon: "🐤",
     name: "ひよこ陛下",
     desc: "白番終了時に💠2を生産",
+    hiddenUntil: ReversiItemCode.Chick,
   },
   Chicken: {
     color: ReversiColor.Neutral,
@@ -193,5 +202,6 @@ export const ReversiStone: { [p in string]: ReversiStone } = {
     icon: "🐔",
     name: "にわとり上皇",
     desc: "白番終了時に🪙(🐤の数)を生産",
+    hiddenUntil: ReversiItemCode.Chick,
   },
 } as const;

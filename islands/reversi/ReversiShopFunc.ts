@@ -8,7 +8,6 @@ import {
   ReversiItems,
 } from "../../models/reversi/ReversiItem.ts";
 import { random } from "../../models/shared/Random.ts";
-import reversi from "../../routes/reversi/index.tsx";
 import { ReversiService } from "./ReversiService.ts";
 import { ReversiEffect } from "./ReversiSoundService.ts";
 
@@ -83,10 +82,10 @@ export const ReversiShopFunc = {
       });
     }
     if (game.reversi.reroleCost === 0) {
-      game.reversi.reroleCost = 5 *
-        (game.has(ReversiItemCode.Capricorn) ? 2 : 1);
+      game.reversi.reroleCost = 5;
     }
     game.reversi = { ...game.reversi, shop, inventory: inv };
+    applyClipboard(game, toBuy.code);
   },
   shopItemDesc(item: ReversiItem) {
     return item.desc.replace("$v", (item.value ?? 0).toString());
@@ -163,6 +162,20 @@ function addRandomItem(game: ReversiService) {
   if (itemToAdd) ReversiShopFunc.pushItem(game, adjustPrice(game, itemToAdd));
 }
 
+function addItem(game: ReversiService, code: ReversiItemCode) {
+  const pool: Set<ReversiItemCode> = new Set([...game.reversi.unlocked]);
+  [...game.reversi.shop.values()].map((item) => {
+    pool.delete(item.code);
+  });
+  [...game.reversi.inventory.values()].map((item) => {
+    if (item.isUnique) pool.delete(item.code);
+  });
+  const itemToAdd = of(code);
+  if (itemToAdd && pool.has(code)) {
+    ReversiShopFunc.pushItem(game, adjustPrice(game, itemToAdd));
+  }
+}
+
 function of(code: ReversiItemCode | undefined) {
   return ReversiItems.find((item) => item.code === code);
 }
@@ -172,4 +185,9 @@ function adjustPrice(game: ReversiService, item: ReversiItem) {
     ...item,
     price: item.price * (2 ** (game.has(item.code)?.amount ?? 0)),
   };
+}
+
+function applyClipboard(game: ReversiService, code: ReversiItemCode) {
+  if (!game.has(ReversiItemCode.Clipboard)) return;
+  addItem(game, code);
 }

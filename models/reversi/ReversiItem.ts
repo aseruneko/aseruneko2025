@@ -12,6 +12,7 @@ export interface ReversiItem {
   value?: number;
   used?: boolean;
   usedFor?: ReversiState;
+  hiddenUntil?: ReversiItemCode;
 }
 
 export const ReversiItemCode = {
@@ -51,6 +52,9 @@ export const ReversiItemCode = {
   Rabbit: "RABBIT",
   LibraMoon: "LIBRA_MOON",
   FastUp: "FAST_UP",
+  GradCap: "GRAD_CAP",
+  Clipboard: "CLIPBOARD",
+  Music: "MUSIC",
 } as const;
 export type ReversiItemCode =
   (typeof ReversiItemCode)[keyof typeof ReversiItemCode];
@@ -114,14 +118,16 @@ export const ReversiItems: ReversiItem[] = [
     desc: "白番の後に追加の白番が増える。反転した石の総💠が2倍",
     price: 5,
     isUnique: true,
+    hiddenUntil: ReversiItemCode.Aquarias,
   },
   {
     code: ReversiItemCode.Capricorn,
     icon: "♑",
     name: "山羊座の徽章",
-    desc: "リロールコストが2倍。ラウンド終了前に💠が1.2倍",
+    desc: "次のラウンドからリロールコストが2倍。ラウンド終了前に💠が1.2倍",
     price: 5,
     isUnique: true,
+    hiddenUntil: ReversiItemCode.Capricorn,
   },
   {
     code: ReversiItemCode.Pisces,
@@ -130,6 +136,7 @@ export const ReversiItems: ReversiItem[] = [
     desc: "番の左上と右下を塞ぐ。ラウンド終了前に💠が1.3倍",
     price: 5,
     isUnique: true,
+    hiddenUntil: ReversiItemCode.Pisces,
   },
   {
     code: ReversiItemCode.Libra,
@@ -138,6 +145,7 @@ export const ReversiItems: ReversiItem[] = [
     desc: "盤面の幅-2(最低4)。反転した石の総💠が2倍",
     price: 5,
     isUnique: true,
+    hiddenUntil: ReversiItemCode.Libra,
   },
   {
     code: ReversiItemCode.Reload,
@@ -149,6 +157,7 @@ export const ReversiItems: ReversiItem[] = [
     value: 1,
     used: false,
     usedFor: "INTERVAL",
+    hiddenUntil: ReversiItemCode.Reload,
   },
   {
     code: ReversiItemCode.FastUp,
@@ -193,6 +202,7 @@ export const ReversiItems: ReversiItem[] = [
     value: 3,
     used: false,
     usedFor: "IN_ROUND",
+    hiddenUntil: ReversiItemCode.Pigeon,
   },
   {
     code: ReversiItemCode.EightBall,
@@ -242,6 +252,7 @@ export const ReversiItems: ReversiItem[] = [
     price: 6,
     isUnique: false,
     value: 30,
+    hiddenUntil: ReversiItemCode.Dmz,
   },
   {
     code: ReversiItemCode.Mail,
@@ -260,6 +271,7 @@ export const ReversiItems: ReversiItem[] = [
     price: 6,
     isUnique: false,
     value: 20,
+    hiddenUntil: ReversiItemCode.Email,
   },
   {
     code: ReversiItemCode.Ring,
@@ -278,6 +290,7 @@ export const ReversiItems: ReversiItem[] = [
     price: 6,
     isUnique: false,
     value: 20,
+    hiddenUntil: ReversiItemCode.Jewel,
   },
   {
     code: ReversiItemCode.Sheep,
@@ -296,6 +309,7 @@ export const ReversiItems: ReversiItem[] = [
     price: 4,
     isUnique: false,
     value: 20,
+    hiddenUntil: ReversiItemCode.Rabbit,
   },
   {
     code: ReversiItemCode.Orange,
@@ -305,6 +319,7 @@ export const ReversiItems: ReversiItem[] = [
     price: 8,
     isUnique: false,
     value: 20,
+    hiddenUntil: ReversiItemCode.Orange,
   },
   {
     code: ReversiItemCode.Chick,
@@ -314,6 +329,7 @@ export const ReversiItems: ReversiItem[] = [
     price: 12,
     isUnique: false,
     value: 20,
+    hiddenUntil: ReversiItemCode.Chick,
   },
   {
     code: ReversiItemCode.Chicken,
@@ -323,6 +339,7 @@ export const ReversiItems: ReversiItem[] = [
     price: 8,
     isUnique: false,
     value: 15,
+    hiddenUntil: ReversiItemCode.Chick,
   },
   {
     code: ReversiItemCode.Insurance,
@@ -378,6 +395,25 @@ export const ReversiItems: ReversiItem[] = [
     value: 1,
   },
   {
+    code: ReversiItemCode.GradCap,
+    icon: "🎓",
+    name: "学士号",
+    desc: "ラウンド終了前、所持💠の(所持アイテム種類x$v)%を得る",
+    price: 12,
+    isUnique: false,
+    value: 1,
+    hiddenUntil: ReversiItemCode.GradCap,
+  },
+  {
+    code: ReversiItemCode.Music,
+    icon: "🎵",
+    name: "鳴り止まないっ",
+    desc: "ラウンド終了前、BGMを再生しているなら、所持💠の3%を得る",
+    price: 3,
+    isUnique: true,
+    hiddenUntil: ReversiItemCode.Music,
+  },
+  {
     code: ReversiItemCode.Bank,
     icon: "🏦",
     name: "法定利率",
@@ -394,6 +430,15 @@ export const ReversiItems: ReversiItem[] = [
     price: 3,
     isUnique: false,
     value: 3,
+  },
+  {
+    code: ReversiItemCode.Clipboard,
+    icon: "📋",
+    name: "クリップボード",
+    desc: "重複アイテムの購入時、再入荷する",
+    price: 4,
+    isUnique: false,
+    hiddenUntil: ReversiItemCode.Clipboard,
   },
   {
     code: ReversiItemCode.BlackMonolis,
