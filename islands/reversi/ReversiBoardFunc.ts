@@ -258,7 +258,7 @@ function raffleWhiteStone(game: ReversiService) {
 function raffleNeutralStones(game: ReversiService) {
   const board = game.reversi.board.board;
   for (let y = 0; y < board.length; y++) {
-    for (let x = 0; x < board.length; x++) {
+    for (let x = 0; x < board[0].length; x++) {
       if (board[y][x].stone === undefined) {
         const stone = raffleNeutralStone(game);
         board[y][x].stone = stone;
