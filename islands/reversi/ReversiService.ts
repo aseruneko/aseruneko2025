@@ -200,11 +200,11 @@ export class ReversiService {
   playLog(): string {
     const str: string[] = [];
     if (this.reversi.state === ReversiState.GameClear) {
-      str.push("v0.0.3a ゲームクリア");
+      str.push("v0.0.3b ゲームクリア");
     } else if (this.reversi.state === ReversiState.GameOver) {
-      str.push("v0.0.3a ゲームオーバー");
+      str.push("v0.0.3b ゲームオーバー");
     } else {
-      str.push(`v0.0.3a ゲーム中(ROUND ${this.reversi.round})`);
+      str.push(`v0.0.3b ゲーム中(ROUND ${this.reversi.round})`);
     }
     str.push(
       `総獲得:💠${this.reversi.totalScore}, 🪙${this.reversi.totalCoins}`,
@@ -266,5 +266,5 @@ function applyJudgeMoon(game: ReversiService) {
 
 function applyHammer(game: ReversiService) {
   ReversiBoardFunc.calcPlaceables(game, false);
-  ReversiShopFunc.reactivate(game, ReversiItemCode.Pass);
+  ReversiShopFunc.reactivate(game, ReversiItemCode.Hammer);
 }
