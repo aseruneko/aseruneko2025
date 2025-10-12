@@ -4,17 +4,83 @@ import { useSignal } from "@preact/signals";
 import { Reversi, ReversiState } from "../../models/reversi/Reversi.ts";
 import { ReversiShopFunc } from "./ReversiShopFunc.ts";
 import { ReversiStoneCode } from "../../models/reversi/ReversiStone.ts";
+import { ReversiMusic, ReversiSoundService } from "./ReversiSoundService.ts";
 
 export default function ReversiComponent() {
   const reversi = useSignal(Reversi.Default());
-  const [game] = useState(() =>
-    new ReversiService(reversi, globalThis.localStorage)
-  );
+  const [sound] = useState(() => new ReversiSoundService());
+  const [game] = useState(() => {
+    return new ReversiService(reversi, globalThis.localStorage, sound);
+  });
   const state = reversi.value.state;
   const board = reversi.value.board;
   const cells = board.board;
   return (
     <div class="reversi-component">
+      <audio ref={sound.music.MAIN} src="mp3/reversi/main.mp3">
+      </audio>
+      <audio ref={sound.effect.GAME_CLEAR} src="mp3/reversi/game_clear.mp3">
+      </audio>
+      <audio ref={sound.effect.GAME_OVER} src="mp3/reversi/game_over.mp3">
+      </audio>
+      <audio ref={sound.effect.PURCHASE} src="mp3/reversi/purchase.mp3"></audio>
+      <audio ref={sound.effect.PUT} src="mp3/reversi/put.mp3"></audio>
+      <audio ref={sound.effect.REROLE} src="mp3/reversi/rerole.mp3"></audio>
+      <audio ref={sound.effect.ROUND_CLEAR} src="mp3/reversi/round_clear.mp3">
+      </audio>
+      <audio ref={sound.effect.UNLOCK} src="mp3/reversi/unlock.mp3">
+      </audio>
+      <audio ref={sound.effect.START} src="mp3/reversi/start.mp3"></audio>
+      <audio ref={sound.effect.PUT} src="mp3/reversi/put.mp3"></audio>
+      <audio ref={sound.effect.RESET} src="mp3/reversi/reset.mp3"></audio>
+      <div class="audio">
+        <div class="sliders">
+          <div class="slider">
+            <b>BGM</b>
+            <input
+              ref={sound.musicVolRef}
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={sound.soundVolume.value}
+              onInput={() => sound.onChangeMusicVol()}
+            />
+          </div>
+          <div class="slider">
+            <b>SE</b>
+            <input
+              ref={sound.effectVolRef}
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={sound.effectVolume.value}
+              onInput={() => sound.onChangeEffectVol()}
+            />
+          </div>
+        </div>
+        <div class="buttons">
+          {!game.sound.playing.value &&
+            (
+              <button
+                type="button"
+                onClick={() => game.sound.begin(ReversiMusic.Main)}
+              >
+                ▶️ BGM
+              </button>
+            )}
+          {game.sound.playing.value &&
+            (
+              <button
+                type="button"
+                onClick={() => game.sound.stop()}
+              >
+                ⏸️ BGM
+              </button>
+            )}
+        </div>
+      </div>
       <div class="reversi">
         <div class="left">
           <div class="board">
@@ -32,7 +98,7 @@ export default function ReversiComponent() {
                       >
                         {cell.stone && (
                           <div class={"tooltip stone " + cell.stone.color}>
-                            <span>{cell.stone.icon}</span>
+                            <div>{cell.stone.icon}</div>
                             {cell.stone.code !== ReversiStoneCode.Black &&
                               cell.stone.code !== ReversiStoneCode.White &&
                               (
@@ -217,15 +283,15 @@ export default function ReversiComponent() {
         <textarea id="myScore">{game.playLog()}</textarea>
       </div>
       <div class="done">
+        <b>v0.0.3</b>
+        <p>・スマートフォン対応</p>
+        <p>・BGMとSEの追加</p>
+        <p>・初期コインを10から15に変更</p>
+        <p>・プレイ記録にバージョンを記載</p>
+        <p>・石のアイコンがズレて表示されるのを軽減</p>
         <b>v0.0.2</b>
         <p>・初期アイテム枠を5から6に変更。バランス微調整。</p>
         <p>・🔨追加。🕊️♎🐤追加（プレイ後に解禁）</p>
-      </div>
-      <div class="todo">
-        <b>やりたいことリスト</b>
-        <p>・難易度調整</p>
-        <p>・アイテム増やす</p>
-        <p>・効果音ならす</p>
       </div>
     </div>
   );

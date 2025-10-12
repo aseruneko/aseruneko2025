@@ -22,6 +22,7 @@ import { ReversiCellFunc } from "./ReversiCellFunc.ts";
 import { ReversiService } from "./ReversiService.ts";
 import { random, randomInt } from "../../models/shared/Random.ts";
 import { ReversiShopFunc } from "./ReversiShopFunc.ts";
+import { ReversiEffect } from "./ReversiSoundService.ts";
 
 export const ReversiBoardFunc = {
   setBoard(game: ReversiService, board: Partial<ReversiBoard>) {
@@ -157,7 +158,10 @@ export const ReversiBoardFunc = {
       );
     });
     const [nx, ny, ns] = cands.reduce((a, b) => a[2] > b[2] ? a : b);
-    if (ns > 0) this.putStone(game, ReversiColor.White, [nx, ny]);
+    if (ns > 0) {
+      this.putStone(game, ReversiColor.White, [nx, ny]);
+      game.sound.play(ReversiEffect.Put);
+    }
     applyRat(game);
     applyDmz(game);
     applyChick(game);

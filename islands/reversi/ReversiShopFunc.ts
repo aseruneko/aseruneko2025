@@ -9,6 +9,7 @@ import {
 } from "../../models/reversi/ReversiItem.ts";
 import { random } from "../../models/shared/Random.ts";
 import { ReversiService } from "./ReversiService.ts";
+import { ReversiEffect } from "./ReversiSoundService.ts";
 
 type Shop = Reversi["shop"];
 export const ReversiShopFunc = {
@@ -32,6 +33,7 @@ export const ReversiShopFunc = {
       (game.has(ReversiItemCode.Cart)?.currentValue ?? 0);
     addRandomItems(game, slot);
     if (!isFree) {
+      game.sound.play(ReversiEffect.Rerole);
       reversi.coins -= reversi.reroleCost;
       reversi.reroleCost = Math.ceil(reversi.reroleCost * 1.2);
       game.reversi = reversi;
@@ -44,6 +46,7 @@ export const ReversiShopFunc = {
     const toBuy = shop.get(code);
     if (!toBuy) return;
     if (game.reversi.coins < toBuy.price) return;
+    game.sound.play(ReversiEffect.Purchase);
     if (toBuy.code === ReversiItemCode.Mail) {
       this.unlock(game, ReversiItemCode.Email);
     }
@@ -103,9 +106,9 @@ export const ReversiShopFunc = {
     game.reversi = { inventory: inv };
   },
   unlock(game: ReversiService, code: ReversiItemCode) {
-    console.log(code);
     const toUnlock = of(code);
     if (game.reversi.unlocked.has(code)) return;
+    game.sound.play(ReversiEffect.Unlock);
     if (toUnlock) {
       const saved = (game.localStorage.getItem("reversiUnlockedItems")?.split(
         "/",

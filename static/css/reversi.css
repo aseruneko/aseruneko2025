@@ -1,11 +1,20 @@
 @import url("./styles.css");
 
+@media only screen and (max-width: 767px) {
+  .reversi > .left {
+    flex-direction: column-reverse !important;
+  }
+  .reversi > .right {
+    flex-direction: column-reverse !important;
+  }
+}
+
 .page {
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  width: 100%;
+  width: 100vw;
   font-size: 14px;
   background-color: #f5f6f6;
 }
@@ -31,7 +40,7 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16px 0;
+  padding: 16px 24px;
   gap: 16px;
   width: 100%;
   .title {
@@ -40,12 +49,14 @@ main {
   }
   .description {
     width: 976px;
+    max-width: 100%;
     background-color: #ffffff;
     border-radius: 3px;
     padding: 8px 16px;
   }
   .game {
     width: 976px;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -73,8 +84,10 @@ footer {
   width: 100%;
   border: solid 1px #dfe0e0;
   box-shadow: 0 0 3px 1px #dfe0e0;
-  background-color: #ffffff;
+  background-color: #e1e1e1;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   > .left {
     display: flex;
     flex-direction: column;
@@ -125,6 +138,9 @@ footer {
   font-size: 24px;
   user-select: none;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   &.BLACK {
     background-color: rgba(0, 0, 0, 0.5);
   }
@@ -133,10 +149,6 @@ footer {
   }
   &.NEUTRAL {
     background-color: rgba(255, 100, 0, 0.5);
-  }
-  span {
-    display: block;
-    transform: translate(0px, -3px);
   }
 }
 
@@ -212,7 +224,7 @@ footer {
 
 .inventory {
   flex: 1;
-  height: 100px;
+  min-height: 100px;
   background-color: #b9c4c4;
   display: flex;
   flex-wrap: wrap;
@@ -284,10 +296,30 @@ footer {
   width: 420px;
 }
 
-.todo {
+.audio {
   border: solid 1px #dfe0e0;
   box-shadow: 0 0 3px 1px #dfe0e0;
   background-color: #ffffff;
   padding: 16px 24px;
-  width: 420px;
+  width: 350px;
+  display: flex;
+  align-items: center;
+  .sliders {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    .slider {
+      b {
+        width: 50px;
+      }
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+  .buttons {
+    min-width: fit-content;
+    display: flex;
+    align-items: center;
+  }
 }

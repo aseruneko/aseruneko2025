@@ -12,11 +12,13 @@ import { ReversiBoardFunc } from "./ReversiBoardFunc.ts";
 import { ReversiCellFunc } from "./ReversiCellFunc.ts";
 import { ReversiColor } from "../../models/reversi/ReversiStone.ts";
 import { ReversiShopFunc } from "./ReversiShopFunc.ts";
+import { ReversiEffect, ReversiSoundService } from "./ReversiSoundService.ts";
 
 export class ReversiService {
   constructor(
     private _reversi: Signal<Reversi>,
     public localStorage: Storage,
+    public sound: ReversiSoundService,
   ) {
     ReversiBoardFunc.initBoard(this);
     this.initialUnlock();
@@ -55,6 +57,7 @@ export class ReversiService {
   }
 
   startRound() {
+    this.sound.play(ReversiEffect.Start);
     this.reversi = {
       score: 0,
       state: ReversiState.InRound,
@@ -72,6 +75,7 @@ export class ReversiService {
       `ROUND ${this.reversi.round} 終了 : 目標💠${this.reversi.goalScore}`,
     );
     if (this.reversi.goalScore > this.reversi.score) {
+      this.sound.play(ReversiEffect.GameOver);
       this.log(`GAME OVER : 獲得💠${this.reversi.score}`);
       this.reversi = { state: ReversiState.GameOver };
       ReversiShopFunc.unlock(this, ReversiItemCode.Orange);
@@ -85,6 +89,7 @@ export class ReversiService {
         `ROUND ${this.reversi.round} 成功 : 獲得💠${this.reversi.score}`,
       );
       if (this.reversi.round === 8) {
+        this.sound.play(ReversiEffect.GameClear);
         this.log(
           `GAME CLEAR : THANK YOU FOR PLAYING!`,
         );
@@ -97,6 +102,7 @@ export class ReversiService {
         return;
       }
     }
+    this.sound.play(ReversiEffect.RoundClear);
     applyBank(this);
     this.reversi = {
       round: this.reversi.round + 1,
@@ -120,6 +126,7 @@ export class ReversiService {
   async onClick(x: number, y: number) {
     if (!this.isClickable(x, y)) return;
     this.reversi = { ...this.reversi, waiting: true };
+    this.sound.play(ReversiEffect.Put);
     ReversiBoardFunc.putStone(this, ReversiColor.Black, [x, y]);
     await sleep(300);
     ReversiBoardFunc.doWhiteTurn(this);
@@ -146,6 +153,7 @@ export class ReversiService {
   }
 
   onClickReset() {
+    this.sound.play(ReversiEffect.Reset);
     this._reversi.value = Reversi.Default();
     this.reversi = this._reversi.value;
     this.initialUnlock();
@@ -161,7 +169,9 @@ export class ReversiService {
       used: true,
       currentValue: (item.currentValue ?? 0) - 1,
     });
-    this.log(`${item.icon}${item.name}を使用`);
+    this.log(
+      `${item.icon}${item.name}を使用(残り${(item.currentValue ?? 0) - 1}回)`,
+    );
     this.reversi = { inventory };
     if (item.code === ReversiItemCode.Pass) applyPass(this);
     if (item.code === ReversiItemCode.Reload) applyReload(this);
@@ -190,11 +200,11 @@ export class ReversiService {
   playLog(): string {
     const str: string[] = [];
     if (this.reversi.state === ReversiState.GameClear) {
-      str.push("ゲームクリア");
+      str.push("v0.0.3 ゲームクリア");
     } else if (this.reversi.state === ReversiState.GameOver) {
-      str.push("ゲームオーバー");
+      str.push("v0.0.3 ゲームオーバー");
     } else {
-      str.push(`ゲーム中(ROUND ${this.reversi.round})`);
+      str.push(`v0.0.3 ゲーム中(ROUND ${this.reversi.round})`);
     }
     str.push(
       `総獲得:💠${this.reversi.totalScore}, 🪙${this.reversi.totalCoins}`,
@@ -235,6 +245,7 @@ function applyPass(game: ReversiService) {
 }
 
 function applyReload(game: ReversiService) {
+  game.sound.play(ReversiEffect.Reset);
   ReversiShopFunc.rerole(game, true);
   ReversiShopFunc.reactivate(game, ReversiItemCode.Reload);
 }
