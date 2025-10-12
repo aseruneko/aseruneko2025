@@ -165,6 +165,10 @@ export const ReversiBoardFunc = {
     applyRat(game);
     applyDmz(game);
     applyChick(game);
+    applyChicken(game);
+    applyBlackCat(game);
+    applySheep(game);
+    applyRabbit(game);
   },
 };
 
@@ -228,6 +232,10 @@ function raffleBlackStone(game: ReversiService) {
     ReversiShopFunc.reactivate(game, ReversiItemCode.EightBall);
     return ReversiStone.EightBall;
   }
+  if (game.isActive(ReversiItemCode.BlackCat)) {
+    ReversiShopFunc.reactivate(game, ReversiItemCode.BlackCat);
+    return ReversiStone.BlackCat;
+  }
   const pools: ReversiStone[] = [];
   const moai = game.has(ReversiItemCode.Moai)?.currentValue;
   const rat = game.has(ReversiItemCode.Rat)?.currentValue;
@@ -247,10 +255,14 @@ function raffleWhiteStone(game: ReversiService) {
   const email = game.has(ReversiItemCode.Email)?.currentValue;
   const ring = game.has(ReversiItemCode.Ring)?.currentValue;
   const jewel = game.has(ReversiItemCode.Jewel)?.currentValue;
+  const sheep = game.has(ReversiItemCode.Sheep)?.currentValue;
+  const rabbit = game.has(ReversiItemCode.Rabbit)?.currentValue;
   if (mail) pools.push(...new Array(mail ?? 0).fill(ReversiStone.Mail));
   if (email) pools.push(...new Array(email ?? 0).fill(ReversiStone.Email));
   if (ring) pools.push(...new Array(ring ?? 0).fill(ReversiStone.Ring));
   if (jewel) pools.push(...new Array(jewel ?? 0).fill(ReversiStone.Jewel));
+  if (sheep) pools.push(...new Array(sheep ?? 0).fill(ReversiStone.Sheep));
+  if (rabbit) pools.push(...new Array(rabbit ?? 0).fill(ReversiStone.Rabbit));
   if (randomInt(100) >= pools.length) return ReversiStone.White;
   return random(pools)!;
 }
@@ -260,7 +272,7 @@ function raffleNeutralStones(game: ReversiService) {
   for (let y = 0; y < board.length; y++) {
     for (let x = 0; x < board[0].length; x++) {
       if (board[y][x].stone === undefined) {
-        const stone = raffleNeutralStone(game);
+        const stone = raffleNeutralStone(game, [x, y]);
         board[y][x].stone = stone;
       }
     }
@@ -268,12 +280,26 @@ function raffleNeutralStones(game: ReversiService) {
   ReversiBoardFunc.setBoard(game, { board: board });
 }
 
-function raffleNeutralStone(game: ReversiService) {
+function raffleNeutralStone(game: ReversiService, [x, y]: Coord) {
   const pools: ReversiStone[] = [];
+  if (x === 0 && y === 0 && game.has(ReversiItemCode.Pisces)) {
+    return ReversiStone.Prohibited;
+  }
+  if (
+    x === ReversiBoardFunc.getWidth(game) - 1 &&
+    y === ReversiBoardFunc.getHeight(game) - 1 &&
+    game.has(ReversiItemCode.Pisces)
+  ) {
+    return ReversiStone.Prohibited;
+  }
   const orange = game.has(ReversiItemCode.Orange)?.currentValue;
   const chick = game.has(ReversiItemCode.Chick)?.currentValue;
+  const chicken = game.has(ReversiItemCode.Chicken)?.currentValue;
   if (orange) pools.push(...new Array(orange ?? 0).fill(ReversiStone.Orange));
   if (chick) pools.push(...new Array(chick ?? 0).fill(ReversiStone.Chick));
+  if (chicken) {
+    pools.push(...new Array(chicken ?? 0).fill(ReversiStone.Chicken));
+  }
   if (randomInt(100) >= pools.length) return undefined;
   return random(pools)!;
 }
@@ -356,6 +382,28 @@ function applyRat(game: ReversiService) {
   }
 }
 
+function applyBlackCat(game: ReversiService) {
+  const blackCat = game.has(ReversiItemCode.BlackCat);
+  if (blackCat) {
+    const earned = game.reversi.board.board.flatMap((row) => {
+      return row.filter((cell) => cell.stone?.code === ReversiStoneCode.Rat);
+    }).length * game.reversi.board.board.flatMap((row) => {
+      return row.filter((cell) =>
+        cell.stone?.code === ReversiStoneCode.BlackCat
+      );
+    }).length * 2;
+    game.reversi = {
+      score: game.reversi.score + earned,
+      totalScore: game.reversi.score + earned,
+    };
+    if (earned > 0) {
+      game.log(
+        `${ReversiStone.BlackCat.icon}${ReversiStone.BlackCat.name}により💠${earned}を獲得`,
+      );
+    }
+  }
+}
+
 function applyDmz(game: ReversiService) {
   const dmz = game.has(ReversiItemCode.Dmz);
   if (dmz) {
@@ -392,4 +440,63 @@ function applyChick(game: ReversiService) {
       );
     }
   }
+}
+
+function applyChicken(game: ReversiService) {
+  const chicken = game.has(ReversiItemCode.Chicken);
+  if (chicken) {
+    const earned = game.reversi.board.board.flatMap((row) => {
+      return row.filter((cell) => cell.stone?.code === ReversiStoneCode.Chick);
+    }).length * game.reversi.board.board.flatMap((row) => {
+      return row.filter((cell) =>
+        cell.stone?.code === ReversiStoneCode.Chicken
+      );
+    }).length;
+    game.reversi = {
+      coins: game.reversi.coins + earned,
+      totalCoins: game.reversi.coins + earned,
+    };
+    if (earned > 0) {
+      game.log(
+        `${ReversiStone.Chicken.icon}${ReversiStone.Chicken.name}により🪙${earned}を獲得`,
+      );
+    }
+  }
+}
+
+function applySheep(game: ReversiService) {
+  const board = game.reversi.board.board;
+  if (!game.has(ReversiItemCode.Sheep)) return;
+  board.map((row, y) => {
+    row.map((cell, x) => {
+      if (cell.stone?.code === ReversiStoneCode.Sheep) {
+        const left = at(board, [x - 1, y]);
+        if (!left) return;
+        if (left.stone === undefined) {
+          board[y][x - 1].stone = ReversiStone.Sheep;
+          board[y][x].stone = undefined;
+        }
+      }
+    });
+  });
+  ReversiBoardFunc.setBoard(game, { board });
+  ReversiBoardFunc.calcPlaceables(game);
+}
+
+function applyRabbit(game: ReversiService) {
+  const board = game.reversi.board.board;
+  if (!game.has(ReversiItemCode.Rabbit)) return;
+  board.map((row, y) => {
+    row.map((cell, x) => {
+      if (cell.stone?.code === ReversiStoneCode.Rabbit) {
+        const up = at(board, [x, y - 1]);
+        if (!up) return;
+        if (up.stone === undefined) {
+          board[y - 1][x].stone = ReversiStone.Rabbit;
+        }
+      }
+    });
+  });
+  ReversiBoardFunc.setBoard(game, { board });
+  ReversiBoardFunc.calcPlaceables(game);
 }

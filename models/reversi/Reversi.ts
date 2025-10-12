@@ -18,6 +18,7 @@ export interface Reversi {
   reroleCost: number;
   totalScore: number;
   totalCoins: number;
+  roundScores: number[];
   shop: Map<ReversiItemCode, ReversiItem>;
   inventory: Map<ReversiItemCode, ReversiItem>;
   unlocked: Set<ReversiItemCode>;
@@ -44,7 +45,8 @@ export const Reversi = {
       coins: ReversiDefaultCoins,
       totalScore: 0,
       totalCoins: 0,
-      reroleCost: 5,
+      reroleCost: 0,
+      roundScores: [],
       shop: new Map(),
       inventory: new Map(),
       unlocked: new Set(ReversiInitialUnlocked),
@@ -66,4 +68,4 @@ export const ReversiGoalScore = [
 ] as const;
 
 export const ReversiDefaultShopSlot = 6 as const; // 6
-export const ReversiDefaultCoins = 15 as const; // 10
+export const ReversiDefaultCoins = 15 as const; // 15

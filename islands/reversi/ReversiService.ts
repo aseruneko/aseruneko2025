@@ -13,8 +13,11 @@ import { ReversiCellFunc } from "./ReversiCellFunc.ts";
 import { ReversiColor } from "../../models/reversi/ReversiStone.ts";
 import { ReversiShopFunc } from "./ReversiShopFunc.ts";
 import { ReversiEffect, ReversiSoundService } from "./ReversiSoundService.ts";
+import { at } from "../../models/shared/TwoDimension.ts";
 
 export class ReversiService {
+  readonly version = "v0.0.4";
+
   constructor(
     private _reversi: Signal<Reversi>,
     public localStorage: Storage,
@@ -70,7 +73,13 @@ export class ReversiService {
 
   endRound() {
     applyJudgeMoon(this);
-    this.reversi = { totalScore: this.reversi.totalScore + this.reversi.score };
+    applyLibraMoon(this);
+    applyCapricorn(this);
+    applyPisces(this);
+    this.reversi = {
+      totalScore: this.reversi.totalScore + this.reversi.score,
+      roundScores: [...this.reversi.roundScores, this.reversi.score],
+    };
     this.log(
       `ROUND ${this.reversi.round} 終了 : 目標💠${this.reversi.goalScore}`,
     );
@@ -83,6 +92,8 @@ export class ReversiService {
       ReversiShopFunc.unlock(this, ReversiItemCode.Aquarias);
       ReversiShopFunc.unlock(this, ReversiItemCode.Libra);
       ReversiShopFunc.unlock(this, ReversiItemCode.Chick);
+      ReversiShopFunc.unlock(this, ReversiItemCode.Capricorn);
+      ReversiShopFunc.unlock(this, ReversiItemCode.Pisces);
       return;
     } else {
       this.log(
@@ -99,6 +110,8 @@ export class ReversiService {
         ReversiShopFunc.unlock(this, ReversiItemCode.Aquarias);
         ReversiShopFunc.unlock(this, ReversiItemCode.Libra);
         ReversiShopFunc.unlock(this, ReversiItemCode.Chick);
+        ReversiShopFunc.unlock(this, ReversiItemCode.Capricorn);
+        ReversiShopFunc.unlock(this, ReversiItemCode.Pisces);
         return;
       }
     }
@@ -108,7 +121,7 @@ export class ReversiService {
       round: this.reversi.round + 1,
       goalScore: ReversiGoalScore[this.reversi.round],
       state: ReversiState.Interval,
-      reroleCost: 5,
+      reroleCost: 5 * (this.has(ReversiItemCode.Capricorn) ? 2 : 1),
     };
     ReversiShopFunc.rerole(this, true);
     ReversiShopFunc.replenish(this);
@@ -119,7 +132,7 @@ export class ReversiService {
       logs: [{
         text: text,
         timestamp: (new Date()).toISOString().replace(/.*T(.*)\..*/, "$1"),
-      }, ...this.reversi.logs].slice(0, 7),
+      }, ...this.reversi.logs].slice(0, 100),
     };
   }
 
@@ -176,6 +189,7 @@ export class ReversiService {
     if (item.code === ReversiItemCode.Pass) applyPass(this);
     if (item.code === ReversiItemCode.Reload) applyReload(this);
     if (item.code === ReversiItemCode.Hammer) applyHammer(this);
+    if (item.code === ReversiItemCode.FastUp) applyFastUp(this);
   }
 
   isReroleDisabled() {
@@ -200,14 +214,18 @@ export class ReversiService {
   playLog(): string {
     const str: string[] = [];
     if (this.reversi.state === ReversiState.GameClear) {
-      str.push("v0.0.3b ゲームクリア");
+      str.push(`${this.version} ゲームクリア`);
     } else if (this.reversi.state === ReversiState.GameOver) {
-      str.push("v0.0.3b ゲームオーバー");
+      str.push(`${this.version} ゲームオーバー(ROUND ${this.reversi.round})`);
     } else {
-      str.push(`v0.0.3b ゲーム中(ROUND ${this.reversi.round})`);
+      str.push(`${this.version} ゲーム中(ROUND ${this.reversi.round})`);
     }
     str.push(
       `総獲得:💠${this.reversi.totalScore}, 🪙${this.reversi.totalCoins}`,
+    );
+    str.push(
+      "各ラウンドスコア:" +
+        this.reversi.roundScores.map((score) => `💠${score}`).join("→"),
     );
     const items: string[] = [];
     [...this.reversi.inventory.values()].map((item) => {
@@ -254,7 +272,7 @@ function applyJudgeMoon(game: ReversiService) {
   const moon = game.has(ReversiItemCode.JudgeMoon);
   if (moon) {
     const earned = game.reversi.board.board.flatMap((row) => {
-      return row.map((cell) => cell.stone?.color === ReversiColor.Black);
+      return row.filter((cell) => cell.stone?.color === ReversiColor.Black);
     }).length * (moon.currentValue ?? 0);
     game.reversi = {
       score: game.reversi.score + earned,
@@ -263,8 +281,68 @@ function applyJudgeMoon(game: ReversiService) {
     if (earned > 0) game.log(`${moon.icon}${moon.name}により💠${earned}を獲得`);
   }
 }
+function applyLibraMoon(game: ReversiService) {
+  const moon = game.has(ReversiItemCode.LibraMoon);
+  if (moon) {
+    const earned = game.reversi.board.board.flatMap((row) => {
+      return row.filter((cell) => cell.stone?.color === ReversiColor.White);
+    }).length * (moon.currentValue ?? 0);
+    game.reversi = {
+      coins: game.reversi.coins + earned,
+      totalCoins: game.reversi.totalCoins + earned,
+    };
+    if (earned > 0) game.log(`${moon.icon}${moon.name}により🪙${earned}を獲得`);
+  }
+}
+
+function applyCapricorn(game: ReversiService) {
+  const capricorn = game.has(ReversiItemCode.Capricorn);
+  if (capricorn) {
+    const earned = Math.ceil(game.reversi.score * 0.2);
+    game.reversi = {
+      score: game.reversi.score + earned,
+      totalScore: game.reversi.totalScore + earned,
+    };
+    if (earned > 0) {
+      game.log(`${capricorn.icon}${capricorn.name}により💠${earned}を獲得`);
+    }
+  }
+}
+
+function applyPisces(game: ReversiService) {
+  const pisces = game.has(ReversiItemCode.Pisces);
+  if (pisces) {
+    const earned = Math.ceil(game.reversi.score * 0.3);
+    game.reversi = {
+      score: game.reversi.score + earned,
+      totalScore: game.reversi.totalScore + earned,
+    };
+    if (earned > 0) {
+      game.log(`${pisces.icon}${pisces.name}により💠${earned}を獲得`);
+    }
+  }
+}
 
 function applyHammer(game: ReversiService) {
   ReversiBoardFunc.calcPlaceables(game, false);
   ReversiShopFunc.reactivate(game, ReversiItemCode.Hammer);
+}
+
+function applyFastUp(game: ReversiService) {
+  ReversiShopFunc.reactivate(game, ReversiItemCode.FastUp);
+  const board = game.reversi.board.board;
+  board.map((row, y) => {
+    row.map((cell, x) => {
+      if (cell.stone !== undefined) {
+        const up = at(board, [x, y - 1]);
+        if (!up) return;
+        if (up.stone === undefined) {
+          board[y - 1][x].stone = cell.stone;
+          board[y][x].stone = undefined;
+        }
+      }
+    });
+  });
+  ReversiBoardFunc.setBoard(game, { board });
+  ReversiBoardFunc.calcPlaceables(game);
 }

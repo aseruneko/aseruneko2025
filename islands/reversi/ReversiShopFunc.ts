@@ -8,6 +8,7 @@ import {
   ReversiItems,
 } from "../../models/reversi/ReversiItem.ts";
 import { random } from "../../models/shared/Random.ts";
+import reversi from "../../routes/reversi/index.tsx";
 import { ReversiService } from "./ReversiService.ts";
 import { ReversiEffect } from "./ReversiSoundService.ts";
 
@@ -56,6 +57,15 @@ export const ReversiShopFunc = {
     if (toBuy.code === ReversiItemCode.EightBall) {
       this.unlock(game, ReversiItemCode.Pigeon);
     }
+    if (toBuy.code === ReversiItemCode.Sheep) {
+      this.unlock(game, ReversiItemCode.Rabbit);
+    }
+    if (toBuy.code === ReversiItemCode.Rat) {
+      this.tempUnlock(game, ReversiItemCode.BlackCat);
+    }
+    if (toBuy.code === ReversiItemCode.Chick) {
+      this.tempUnlock(game, ReversiItemCode.Chicken);
+    }
     shop.delete(code);
     game.reversi.coins -= toBuy.price;
     const baught = inv.get(code);
@@ -71,6 +81,10 @@ export const ReversiShopFunc = {
         currentValue: toBuy.value,
         amount: 1,
       });
+    }
+    if (game.reversi.reroleCost === 0) {
+      game.reversi.reroleCost = 5 *
+        (game.has(ReversiItemCode.Capricorn) ? 2 : 1);
     }
     game.reversi = { ...game.reversi, shop, inventory: inv };
   },
@@ -119,6 +133,13 @@ export const ReversiShopFunc = {
       );
       game.reversi.unlocked.add(toUnlock.code);
       game.log(`${toUnlock.icon}${toUnlock.name}がアンロック！`);
+    }
+  },
+  tempUnlock(game: ReversiService, code: ReversiItemCode) {
+    const toUnlock = of(code);
+    if (game.reversi.unlocked.has(code)) return;
+    if (toUnlock) {
+      game.reversi.unlocked.add(toUnlock.code);
     }
   },
 };

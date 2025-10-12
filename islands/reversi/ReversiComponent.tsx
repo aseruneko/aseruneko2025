@@ -35,6 +35,10 @@ export default function ReversiComponent() {
       <audio ref={sound.effect.RESET} src="mp3/reversi/reset.mp3"></audio>
       <div class="audio">
         <div class="sliders">
+          <p>
+            <span>{game.version}</span>
+            <span class="smartphone">Tablet/PC推奨</span>
+          </p>
           <div class="slider">
             <b>BGM</b>
             <input
@@ -129,122 +133,124 @@ export default function ReversiComponent() {
           </div>
         </div>
         <div class="right">
-          <div class="game-state">
-            <div class="left">
-              {state === ReversiState.Interval &&
-                (
-                  <div>
-                    <p>今は {reversi.value.round} ラウンド目</p>
-                    <p>準備ができたらボタン🔘を押そう👉️</p>
-                    <p>目標スコア：💠{reversi.value.goalScore}</p>
-                  </div>
-                )}
-              {state === ReversiState.InRound &&
-                (
-                  <div>
-                    <p>今は {reversi.value.round} ラウンド目</p>
-                    <p>現在スコア：💠{reversi.value.score}</p>
-                    <p>目標スコア：💠{reversi.value.goalScore}</p>
-                  </div>
-                )}
-              {state === ReversiState.GameClear &&
-                (
-                  <div>
-                    <p>🎉ゲームクリア おめでとうございます🎉</p>
-                    <p>総獲得スコア：💠{reversi.value.totalScore}</p>
-                    <p>総獲得コイン：🪙{reversi.value.totalCoins}</p>
-                  </div>
-                )}
-              {state === ReversiState.GameOver &&
-                (
-                  <div>
-                    <p>😞ゲームオーバー 次は頑張ろう😞</p>
-                    <p>総獲得スコア：💠{reversi.value.totalScore}</p>
-                    <p>総獲得コイン：🪙{reversi.value.totalCoins}</p>
-                  </div>
-                )}
-            </div>
-            <div class="right">
-              {(state === ReversiState.InRound ||
-                state === ReversiState.Interval) && (
-                <button
-                  type="button"
-                  onClick={() => game.startRound()}
-                  disabled={state !== ReversiState.Interval}
-                >
-                  💥開始💥
-                </button>
-              )}
-              {(state === ReversiState.GameClear ||
-                state === ReversiState.GameOver) && (
-                <button
-                  type="button"
-                  onClick={() => game.onClickReset()}
-                >
-                  🔃リセット🔃
-                </button>
-              )}
-            </div>
-          </div>
-          <div class="shop-state">
-            <p class="money">🪙{reversi.value.coins}</p>
-            <button
-              type="button"
-              disabled={game.isReroleDisabled()}
-              onClick={() => game.onClickRerole()}
-            >
-              リロール 🪙{reversi.value.reroleCost}
-            </button>
-          </div>
-          <div class="shop">
-            {[...reversi.value.shop.values()].map((item, i) => {
-              return (
-                <div class="shop-item" key={i}>
-                  <div class="icon-and-name">
-                    <p class="icon">{item.icon}</p>
+          <div class="not-inventory">
+            <div class="game-state">
+              <div class="left">
+                {state === ReversiState.Interval &&
+                  (
                     <div>
-                      <p class="name">
-                        <span>{item.name}</span>
-                        {!item.isUnique && (
-                          <span class="tooltip">
-                            [重複]
-                            <div class="tooltip-text">
-                              <b>重複</b>
-                              <p>
-                                このアイテムは複数回購入することができ、効果が蓄積していきます。
-                              </p>
-                              <p>ただし、購入の度に値段が倍になります。</p>
-                            </div>
-                          </span>
-                        )}
-                        {item.used !== undefined && (
-                          <span class="tooltip">
-                            [発動]
-                            <div class="tooltip-text">
-                              <b>発動</b>
-                              <p>
-                                このアイテムはアイテム欄をクリックすると効果が適用されます。
-                              </p>
-                              <p>
-                                使用回数はラウンド終了時に回復します。
-                              </p>
-                            </div>
-                          </span>
-                        )}
-                      </p>
-                      <p class="desc">{ReversiShopFunc.shopItemDesc(item)}</p>
+                      <p>今は {reversi.value.round} ラウンド目</p>
+                      <p>準備ができたらボタン🔘を押そう👉️</p>
+                      <p>目標スコア：💠{reversi.value.goalScore}</p>
                     </div>
-                  </div>
+                  )}
+                {state === ReversiState.InRound &&
+                  (
+                    <div>
+                      <p>今は {reversi.value.round} ラウンド目</p>
+                      <p>現在スコア：💠{reversi.value.score}</p>
+                      <p>目標スコア：💠{reversi.value.goalScore}</p>
+                    </div>
+                  )}
+                {state === ReversiState.GameClear &&
+                  (
+                    <div>
+                      <p>🎉ゲームクリア おめでとうございます🎉</p>
+                      <p>総獲得スコア：💠{reversi.value.totalScore}</p>
+                      <p>総獲得コイン：🪙{reversi.value.totalCoins}</p>
+                    </div>
+                  )}
+                {state === ReversiState.GameOver &&
+                  (
+                    <div>
+                      <p>😞ゲームオーバー 次は頑張ろう😞</p>
+                      <p>総獲得スコア：💠{reversi.value.totalScore}</p>
+                      <p>総獲得コイン：🪙{reversi.value.totalCoins}</p>
+                    </div>
+                  )}
+              </div>
+              <div class="right">
+                {(state === ReversiState.InRound ||
+                  state === ReversiState.Interval) && (
                   <button
                     type="button"
-                    disabled={game.isPurchaseDisabled(item.code)}
-                    onClick={() => game.onClickPurchase(item.code)}
+                    onClick={() => game.startRound()}
+                    disabled={state !== ReversiState.Interval}
                   >
-                    🪙{item.price}
+                    💥開始💥
                   </button>
-                </div>
-              );
-            })}
+                )}
+                {(state === ReversiState.GameClear ||
+                  state === ReversiState.GameOver) && (
+                  <button
+                    type="button"
+                    onClick={() => game.onClickReset()}
+                  >
+                    🔃リセット🔃
+                  </button>
+                )}
+              </div>
+            </div>
+            <div class="shop-state">
+              <p class="money">🪙{reversi.value.coins}</p>
+              <button
+                type="button"
+                disabled={game.isReroleDisabled()}
+                onClick={() => game.onClickRerole()}
+              >
+                リロール 🪙{reversi.value.reroleCost}
+              </button>
+            </div>
+            <div class="shop">
+              {[...reversi.value.shop.values()].map((item, i) => {
+                return (
+                  <div class="shop-item" key={i}>
+                    <div class="icon-and-name">
+                      <p class="icon">{item.icon}</p>
+                      <div>
+                        <p class="name">
+                          <span>{item.name}</span>
+                          {!item.isUnique && (
+                            <span class="tooltip">
+                              [重複]
+                              <div class="tooltip-text">
+                                <b>重複</b>
+                                <p>
+                                  このアイテムは複数回購入することができ、効果が蓄積していきます。
+                                </p>
+                                <p>ただし、購入の度に値段が倍になります。</p>
+                              </div>
+                            </span>
+                          )}
+                          {item.used !== undefined && (
+                            <span class="tooltip">
+                              [発動]
+                              <div class="tooltip-text">
+                                <b>発動</b>
+                                <p>
+                                  このアイテムはアイテム欄をクリックすると効果が適用されます。
+                                </p>
+                                <p>
+                                  使用回数はラウンド終了時に回復します。
+                                </p>
+                              </div>
+                            </span>
+                          )}
+                        </p>
+                        <p class="desc">{ReversiShopFunc.shopItemDesc(item)}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={game.isPurchaseDisabled(item.code)}
+                      onClick={() => game.onClickPurchase(item.code)}
+                    >
+                      🪙{item.price}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
           <div class="inventory">
             {[...reversi.value.inventory.values()].map((item, i) => {
@@ -269,6 +275,10 @@ export default function ReversiComponent() {
       </div>
       <div class="my-score">
         <p>
+          <span>図鑑ができました（ネタバレ注意）👉️</span>
+          <a href="reversi/library" target="_blank">図鑑（新しいタブで開く）</a>
+        </p>
+        <p>
           <span>プレイ記録を貼り付けて友達を驚かせましょう！</span>
           <button
             type="button"
@@ -283,6 +293,17 @@ export default function ReversiComponent() {
         <textarea id="myScore">{game.playLog()}</textarea>
       </div>
       <div class="done">
+        <b>v0.0.4</b>
+        <p>・図鑑を追加</p>
+        <p>・一番最初だけリロールコストを0にした</p>
+        <p>・最大ログ件数を7から100にした</p>
+        <p>・🛒の効果量を2から3に変更</p>
+        <p>・🐑🌕⏫追加</p>
+        <p>・🐈‍⬛追加。🐀購入後にのみ出現します</p>
+        <p>・🐔追加。🐤購入後にのみ出現します</p>
+        <p>・🐇追加。🐑購入後に解禁</p>
+        <p>・♑♓追加。プレイ後に解禁</p>
+        <p>・スマートフォン向け調整</p>
         <b>v0.0.3</b>
         <p>・スマートフォン対応</p>
         <p>・BGMとSEの追加</p>

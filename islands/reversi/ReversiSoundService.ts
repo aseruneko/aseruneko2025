@@ -1,4 +1,4 @@
-import { createRef, RefObject, TargetedEvent } from "preact";
+import { createRef, RefObject } from "preact";
 import { Signal } from "@preact/signals";
 
 export class ReversiSoundService {
