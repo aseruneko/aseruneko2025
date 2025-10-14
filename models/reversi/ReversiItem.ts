@@ -469,10 +469,10 @@ export const ReversiItems: ReversiItem[] = [
     code: ReversiItemCode.Accordion,
     icon: "🪗",
     name: "アコーディオン",
-    desc: "購入時に🎵1獲得。ラウンド終了時に🪙と💠を(総🎵*$v)だけ獲得",
-    price: 6,
+    desc: "購入時に🎵1獲得。ラウンド終了時に🪙と💠を(総🎵)だけ獲得",
+    price: 10,
     value: 1,
-    isUnique: false,
+    isUnique: true,
   },
   {
     code: ReversiItemCode.Guitar,

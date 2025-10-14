@@ -24,7 +24,7 @@ import {
 import { ReversiItemChain } from "../../models/reversi/ReversiTofu.ts";
 
 export class ReversiService {
-  readonly version = "v0.1.1c";
+  readonly version = "v0.1.1d";
   public tofu: ReversiTofuService;
 
   constructor(
@@ -441,7 +441,7 @@ function applyGuitar(game: ReversiService) {
 function applyAccordion(game: ReversiService) {
   const accordion = game.has(ReversiItemCode.Accordion);
   if (!accordion) return;
-  const earned = game.reversi.vibes * (accordion.currentValue ?? 0);
+  const earned = game.reversi.vibes;
   game.log(
     `${accordion.icon}${accordion.name}により💠${earned}🪙${earned}を獲得`,
   );
