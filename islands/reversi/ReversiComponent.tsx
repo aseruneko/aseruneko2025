@@ -14,11 +14,6 @@ export default function ReversiComponent() {
   const [game] = useState(() => {
     return new ReversiService(reversi, globalThis.localStorage, sound);
   });
-  const [tofu] = useState(() => {
-    const t = new ReversiTofuService(game, localStorage);
-    game.setTofu(t);
-    return t;
-  });
 
   const state = reversi.value.state;
   const board = reversi.value.board;

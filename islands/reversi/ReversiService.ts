@@ -25,13 +25,21 @@ import { ReversiItemChain } from "../../models/reversi/ReversiTofu.ts";
 
 export class ReversiService {
   readonly version = "v0.1.1";
-  public tofu?: ReversiTofuService;
+  public tofu: ReversiTofuService;
 
   constructor(
     private _reversi: Signal<Reversi>,
     public localStorage: Storage,
     public sound: ReversiSoundService,
-  ) {}
+  ) {
+    this.tofu = new ReversiTofuService(this, localStorage);
+    while (true) {
+      if (this.tofu) {
+        this.onClickReset(true);
+        break;
+      }
+    }
+  }
 
   setTofu(tofu: ReversiTofuService) {
     this.tofu = tofu;
