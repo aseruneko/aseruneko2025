@@ -171,7 +171,7 @@ export const ReversiBoardFunc = {
     applyBlackCat(game);
     applySheep(game);
     applyRabbit(game);
-    applyAccordion(game);
+    applyMicrophone(game);
   },
 };
 
@@ -329,8 +329,7 @@ function adjustScore(game: ReversiService, score: ReversiOutcome) {
   const interest = game.has(ReversiItemCode.Interest);
   if (interest) {
     const interestIncome = Math.ceil(
-      score.score * game.reversi.coins *
-        (interest.currentValue ?? 0) / 100,
+      score.score * game.reversi.coins / 100,
     );
     if (interestIncome > 0) {
       game.log(
@@ -514,25 +513,18 @@ function applyRabbit(game: ReversiService) {
   ReversiBoardFunc.calcPlaceables(game);
 }
 
+function applyMicrophone(game: ReversiService) {
+  const microphone = game.has(ReversiItemCode.Microphone);
+  if (!microphone) return;
+  const earned = microphone.currentValue ?? 0;
+  game.log(`${microphone.icon}${microphone.name}により🎵${earned}を獲得`);
+  game.reversi = { vibes: game.reversi.vibes + earned };
+}
+
 function applySaxophone(game: ReversiService) {
   const saxophone = game.has(ReversiItemCode.Saxophone);
   if (!saxophone) return;
   const earned = saxophone.currentValue ?? 0;
   game.log(`${saxophone.icon}${saxophone.name}により🎵${earned}を獲得`);
   game.reversi = { vibes: game.reversi.vibes + earned };
-}
-
-function applyAccordion(game: ReversiService) {
-  const accordion = game.has(ReversiItemCode.Accordion);
-  if (!accordion) return;
-  const earned = game.reversi.vibes * (accordion.value ?? 0);
-  game.log(
-    `${accordion.icon}${accordion.name}により💠${earned}🪙${earned}を獲得`,
-  );
-  game.reversi = {
-    coins: game.reversi.coins + earned,
-    score: game.reversi.score + earned,
-    totalCoins: game.reversi.coins + earned,
-    totalScore: game.reversi.score + earned,
-  };
 }

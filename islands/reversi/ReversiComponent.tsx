@@ -311,6 +311,9 @@ export default function ReversiComponent() {
         <textarea id="myScore">{game.playLog()}</textarea>
       </div>
       <div class="done">
+        <b>v0.1.1c</b>
+        <p>・💹はデザインに失敗しました</p>
+        <p>・🎤🎷🪗はデザインに失敗しました</p>
         <b>v0.1.1b</b>
         <p>・嘘の説明文を修正</p>
         <p>・🎷が重複しないバグを修正</p>

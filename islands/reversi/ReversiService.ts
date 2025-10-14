@@ -24,7 +24,7 @@ import {
 import { ReversiItemChain } from "../../models/reversi/ReversiTofu.ts";
 
 export class ReversiService {
-  readonly version = "v0.1.1b";
+  readonly version = "v0.1.1c";
   public tofu: ReversiTofuService;
 
   constructor(
@@ -118,7 +118,7 @@ export class ReversiService {
     applyCapricorn(this);
     applyPisces(this);
     applyMusic(this);
-    applyMicrophone(this);
+    applyAccordion(this);
     this.reversi = {
       totalScore: this.reversi.totalScore + this.reversi.score,
       roundScores: [...this.reversi.roundScores, this.reversi.score],
@@ -438,10 +438,17 @@ function applyGuitar(game: ReversiService) {
   ReversiShopFunc.rerole(game, true);
 }
 
-function applyMicrophone(game: ReversiService) {
-  const microphone = game.has(ReversiItemCode.Microphone);
-  if (!microphone) return;
-  const earned = (microphone.value ?? 0) * game.reversi.round;
-  game.log(`${microphone.icon}${microphone.name}により🎵${earned}を獲得`);
-  game.reversi = { vibes: game.reversi.vibes + earned };
+function applyAccordion(game: ReversiService) {
+  const accordion = game.has(ReversiItemCode.Accordion);
+  if (!accordion) return;
+  const earned = game.reversi.vibes * (accordion.currentValue ?? 0);
+  game.log(
+    `${accordion.icon}${accordion.name}により💠${earned}🪙${earned}を獲得`,
+  );
+  game.reversi = {
+    coins: game.reversi.coins + earned,
+    score: game.reversi.score + earned,
+    totalCoins: game.reversi.coins + earned,
+    totalScore: game.reversi.score + earned,
+  };
 }
