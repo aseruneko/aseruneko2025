@@ -6,7 +6,6 @@ import { ReversiShopFunc } from "./ReversiShopFunc.ts";
 import { ReversiStoneCode } from "../../models/reversi/ReversiStone.ts";
 import { ReversiMusic, ReversiSoundService } from "./ReversiSoundService.ts";
 import ReversiTofuComponent from "./tofu/ReversiTofuComponent.tsx";
-import { ReversiTofuService } from "./tofu/ReversiTofuService.ts";
 
 export default function ReversiComponent() {
   const reversi = useSignal(Reversi.Default());

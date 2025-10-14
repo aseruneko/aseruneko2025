@@ -19,6 +19,7 @@ export class ReversiTofuService {
     () => (this.tofu.value.shopUnlocked),
   );
   readonly tofuable = signal<boolean>(true);
+  public loaded = false;
 
   constructor(
     private game: ReversiService,
@@ -30,8 +31,7 @@ export class ReversiTofuService {
     this.unlockPack(ReversiPackCode.Zodiac1);
     this.unlockPack(ReversiPackCode.Vibes);
     this.unlockPack(ReversiPackCode.Banned);
-    this.unlockEmblem(ReversiItemCode.Katakana);
-    this.unlockEmblem(ReversiItemCode.One);
+    this.loaded = true;
   }
 
   get tofuValue() {

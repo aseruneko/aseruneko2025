@@ -24,7 +24,7 @@ import {
 import { ReversiItemChain } from "../../models/reversi/ReversiTofu.ts";
 
 export class ReversiService {
-  readonly version = "v0.1.1";
+  readonly version = "v0.1.1a";
   public tofu: ReversiTofuService;
 
   constructor(
@@ -34,7 +34,9 @@ export class ReversiService {
   ) {
     this.tofu = new ReversiTofuService(this, localStorage);
     while (true) {
-      if (this.tofu) {
+      if (this.tofu && this.tofu.loaded) {
+        this.tofu.unlockEmblem(ReversiItemCode.Katakana);
+        this.tofu.unlockEmblem(ReversiItemCode.One);
         this.onClickReset(true);
         break;
       }
