@@ -142,7 +142,7 @@ export const ReversiBoardFunc = {
     } else {
       game.log(`白(${x}, ${y})`);
     }
-    if (originalScore.coin >= 5) applySaxophone(game);
+    if (originalScore.coin >= 3) applySaxophone(game);
     this.calcPlaceables(game);
   },
   doWhiteTurn(game: ReversiService) {
@@ -171,6 +171,7 @@ export const ReversiBoardFunc = {
     applyBlackCat(game);
     applySheep(game);
     applyRabbit(game);
+    applyAccordion(game);
   },
 };
 
@@ -208,7 +209,9 @@ function _reverse(
     let stone = ReversiStone.Black;
     if (by === ReversiColor.Black) {
       stone = ReversiStone.Black;
-      if (game.has(ReversiItemCode.BlackMonolis)) {
+      const blackMonolis =
+        game.has(ReversiItemCode.BlackMonolis)?.currentValue ?? 0;
+      if (randomInt(100) < blackMonolis) {
         stone = raffleBlackStone(game);
       }
       if (game.isActive(ReversiItemCode.Pigeon)) {
@@ -217,7 +220,9 @@ function _reverse(
     }
     if (by === ReversiColor.White) {
       stone = ReversiStone.White;
-      if (game.has(ReversiItemCode.WhiteMonolis)) {
+      const whiteMonolis =
+        game.has(ReversiItemCode.WhiteMonolis)?.currentValue ?? 0;
+      if (randomInt(100) < whiteMonolis) {
         stone = raffleWhiteStone(game);
       }
     }
@@ -512,7 +517,22 @@ function applyRabbit(game: ReversiService) {
 function applySaxophone(game: ReversiService) {
   const saxophone = game.has(ReversiItemCode.Saxophone);
   if (!saxophone) return;
-  const earned = saxophone.value ?? 0;
+  const earned = saxophone.currentValue ?? 0;
   game.log(`${saxophone.icon}${saxophone.name}により🎵${earned}を獲得`);
   game.reversi = { vibes: game.reversi.vibes + earned };
+}
+
+function applyAccordion(game: ReversiService) {
+  const accordion = game.has(ReversiItemCode.Accordion);
+  if (!accordion) return;
+  const earned = game.reversi.vibes * (accordion.value ?? 0);
+  game.log(
+    `${accordion.icon}${accordion.name}により💠${earned}🪙${earned}を獲得`,
+  );
+  game.reversi = {
+    coins: game.reversi.coins + earned,
+    score: game.reversi.score + earned,
+    totalCoins: game.reversi.coins + earned,
+    totalScore: game.reversi.score + earned,
+  };
 }
