@@ -24,19 +24,18 @@ import {
 import { ReversiItemChain } from "../../models/reversi/ReversiTofu.ts";
 
 export class ReversiService {
-  readonly version = "v0.1.0";
-  readonly tofu: ReversiTofuService;
+  readonly version = "v0.1.1";
+  public tofu?: ReversiTofuService;
 
   constructor(
     private _reversi: Signal<Reversi>,
     public localStorage: Storage,
     public sound: ReversiSoundService,
-  ) {
-    this.tofu = new ReversiTofuService(this, localStorage);
-    this.calcEmblems();
-    this.calcItemPool();
-    ReversiBoardFunc.initBoard(this);
-    ReversiShopFunc.rerole(this, true);
+  ) {}
+
+  setTofu(tofu: ReversiTofuService) {
+    this.tofu = tofu;
+    this.onClickReset(true);
   }
 
   has(code: ReversiItemCode): ReversiItem | undefined {

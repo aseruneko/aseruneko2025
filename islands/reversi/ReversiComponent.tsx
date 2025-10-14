@@ -6,6 +6,7 @@ import { ReversiShopFunc } from "./ReversiShopFunc.ts";
 import { ReversiStoneCode } from "../../models/reversi/ReversiStone.ts";
 import { ReversiMusic, ReversiSoundService } from "./ReversiSoundService.ts";
 import ReversiTofuComponent from "./tofu/ReversiTofuComponent.tsx";
+import { ReversiTofuService } from "./tofu/ReversiTofuService.ts";
 
 export default function ReversiComponent() {
   const reversi = useSignal(Reversi.Default());
@@ -13,6 +14,12 @@ export default function ReversiComponent() {
   const [game] = useState(() => {
     return new ReversiService(reversi, globalThis.localStorage, sound);
   });
+  const [tofu] = useState(() => {
+    const t = new ReversiTofuService(game, localStorage);
+    game.setTofu(t);
+    return t;
+  });
+
   const state = reversi.value.state;
   const board = reversi.value.board;
   const cells = board.board;
@@ -282,7 +289,7 @@ export default function ReversiComponent() {
           </div>
         </div>
       </div>
-      <ReversiTofuComponent tofu={game.tofu}></ReversiTofuComponent>
+      <ReversiTofuComponent tofu={game.tofu!}></ReversiTofuComponent>
       <div class="my-score">
         <p>
           <span>図鑑ができました👉️</span>
@@ -310,6 +317,8 @@ export default function ReversiComponent() {
         <textarea id="myScore">{game.playLog()}</textarea>
       </div>
       <div class="done">
+        <b>v0.1.1</b>
+        <p>・InternalServerErrorの修正</p>
         <b>v0.1.0</b>
         <p>・🔥炎上豆腐店🔥を追加</p>
         <p>・オレンジパック（🍊🌻🐤🐔）の追加</p>
