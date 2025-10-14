@@ -435,7 +435,7 @@ export const ReversiItems: ReversiItem[] = [
     name: "黒のモノリス",
     desc: "⚫の配置時の変換効果が、$v%で黒による反転時にも発生する",
     price: 8,
-    value: 10,
+    value: 20,
     isUnique: false,
   },
   {
@@ -444,7 +444,7 @@ export const ReversiItems: ReversiItem[] = [
     name: "白のモノリス",
     desc: "⚪️の配置時の変換効果が、$v%白による反転時にも発生する",
     price: 8,
-    value: 10,
+    value: 20,
     isUnique: false,
   },
   {

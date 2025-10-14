@@ -24,7 +24,7 @@ import {
 import { ReversiItemChain } from "../../models/reversi/ReversiTofu.ts";
 
 export class ReversiService {
-  readonly version = "v0.1.1d";
+  readonly version = "v0.1.1e";
   public tofu: ReversiTofuService;
 
   constructor(

@@ -37,7 +37,8 @@ export const ReversiPurchasingChain: Partial<
 > = {
   [ReversiItemCode.Mail]: [ReversiItemCode.Email],
   [ReversiItemCode.Ring]: [ReversiItemCode.Jewel],
-  [ReversiItemCode.EightBall]: [ReversiItemCode.Pigeon],
+  [ReversiItemCode.EightBall]: [ReversiItemCode.Moai],
+  [ReversiItemCode.Pigeon]: [ReversiItemCode.Pass],
   [ReversiItemCode.Sheep]: [ReversiItemCode.Rabbit],
 } as const;
 
