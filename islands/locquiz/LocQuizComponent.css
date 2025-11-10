@@ -1,0 +1,50 @@
+body {
+  background-color: #000001;
+}
+
+.loc-quiz {
+  margin: 16px 24px;
+  padding: 16px 24px;
+  background-color: #4e0100;
+  border-radius: 30px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.quiz {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  white-space: pre-wrap;
+}
+
+button, a {
+  padding: 8px 16px;
+  background-color: #3455af;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  &:hover {
+    background-color: #294185;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    color: #c0c6d1;
+    background-color: #6e737c;
+  }
+}
+input {
+  border: solid 1px #dfe0e0;
+  border-radius: 3px;
+  width: 480px;
+  height: 30px;
+  padding: 4px 8px;
+  color: red;
+  background-color: black;
+  text-align: center;
+}
